@@ -40,7 +40,7 @@ const Hero = () => {
         
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-          <button className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-4 px-10 rounded-2xl text-lg transition-all duration-300 hover:from-purple-700 hover:to-blue-700 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
+          <a href="/catalog" className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-4 px-10 rounded-2xl text-lg transition-all duration-300 hover:from-purple-700 hover:to-blue-700 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 inline-block text-center">
             <span className="relative z-10 flex items-center justify-center">
               Start Cataloging
               <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@ const Hero = () => {
               </svg>
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-blue-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </button>
+          </a>
           
           <button className="group relative bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:border-purple-300 text-gray-700 hover:text-purple-700 font-semibold py-4 px-10 rounded-2xl text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-white">
             <span className="flex items-center justify-center">
