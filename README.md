@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Restub
+
+A modern experience cataloging application built with Next.js that helps you capture and remember your most memorable moments. Never forget the details of concerts, sports events, movies, travel experiences, and more.
+
+## Features
+
+- **Experience Cataloging**: Add and organize experiences by category (concerts, sports, movies, theater, festivals, travel, dining, and more)
+- **Rich Details**: Capture who, what, when, where, and personal notes for each experience
+- **Interactive Cards**: View experiences in beautiful, categorized cards with edit and delete functionality
+- **Modern UI**: Clean, responsive design with gradient backgrounds and smooth animations
+- **Form Validation**: Comprehensive form handling with required fields and category-specific options
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+├── components/          # Reusable components
+│   ├── Header.tsx      # Navigation header
+│   ├── Hero.tsx        # Homepage hero section
+│   └── Footer.tsx      # Site footer
+├── catalog/            # Experience cataloging pages
+│   ├── page.tsx        # Main catalog interface
+│   └── layout.tsx      # Catalog-specific layout
+├── layout.tsx          # Root layout
+├── page.tsx           # Homepage
+└── globals.css        # Global styles
+```
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: Next.js 15.4.5 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **UI Components**: Custom React components
+- **State Management**: React useState hooks. But respect server/client component relationship (use use client only when needed, be skepetical of excessive or uneeded useeffects -- as outlined: https://react.dev/learn/you-might-not-need-an-effect)
+- **Forms**: Next.js form actions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint
 
-## Deploy on Vercel
+## Features in Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Automatic experience detection from tickets/receipts
+- Data persistence with database integration
+- Search and filtering capabilities
+- Export functionality
+- Photo attachments
