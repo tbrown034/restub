@@ -1,86 +1,226 @@
+import Link from "next/link";
+
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/50 py-24 px-4 sm:px-6 lg:px-8">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-32 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-blue-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-gradient-to-tr from-blue-400/20 to-purple-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-pink-400/10 rounded-full blur-3xl"></div>
-      </div>
-      
+    <section className="relative py-12 px-4 sm:px-6 lg:px-8">
       <div className="relative max-w-7xl mx-auto text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-blue-100 border border-purple-200/50 mb-8">
-          <span className="text-sm font-medium bg-gradient-to-r from-purple-700 to-blue-700 bg-clip-text text-transparent">
-            ✨ The Future of Event Memory Keeping
-          </span>
-        </div>
-        
         {/* Main heading */}
-        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
-          <span className="bg-gradient-to-r from-gray-900 via-purple-900 to-blue-900 bg-clip-text text-transparent">
-            Never Lose Your
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Concert Memories
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Again
-          </span>
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-8 sm:mb-10 leading-tight tracking-tight">
+          <span className="text-orange-600 block">ReStub</span>
+          <span className="text-slate-800 block">Your Sports</span>
+          <span className="text-blue-600 block">Memory Keeper</span>
         </h1>
-        
-        {/* Subtitle */}
-        <h2 className="text-xl sm:text-2xl lg:text-3xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-          Catalog, rank, and share your concert and sports event experiences with 
-          <span className="font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"> AI-powered insights</span>. 
-          Import setlists, box scores, photos, and personal notes all in one beautiful place.
-        </h2>
-        
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-          <a href="/catalog" className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-4 px-10 rounded-2xl text-lg transition-all duration-300 hover:from-purple-700 hover:to-blue-700 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 inline-block text-center">
+
+        {/* Balanced Subtitle */}
+        <div className="mb-10 max-w-4xl mx-auto">
+          <h2 className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium text-center">
+            Never forget that incredible game experience.
+            <a
+              href="/log"
+              className="text-orange-600 hover:text-orange-700 font-semibold border-b border-orange-300 hover:border-orange-500 transition-all duration-200 mx-1"
+            >
+              log the games
+            </a>
+            you attend,
+            <a
+              href="/catalog"
+              className="text-blue-600 hover:text-blue-700 font-semibold border-b border-blue-300 hover:border-blue-500 transition-all duration-200 mx-1"
+            >
+              build your collection
+            </a>
+            and
+            <a
+              href="/memories"
+              className="text-green-600 hover:text-green-700 font-semibold border-b border-green-300 hover:border-green-500 transition-all duration-200 mx-1"
+            >
+              preserve and share your stadium memories
+            </a>
+            in one place.
+          </h2>
+        </div>
+
+        {/* CTA Buttons - Refined */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-16">
+          <Link
+            href="/track"
+            className="group relative bg-orange-600 border border-orange-700 text-white font-semibold py-3 px-8 rounded-xl text-base transition-all duration-300 hover:bg-orange-700 hover:shadow-lg inline-block text-center"
+          >
             <span className="relative z-10 flex items-center justify-center">
-              Start Cataloging
-              <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              Start Logging
+              <svg
+                className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
               </svg>
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-blue-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </a>
-          
-          <button className="group relative bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:border-purple-300 text-gray-700 hover:text-purple-700 font-semibold py-4 px-10 rounded-2xl text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-white">
+          </Link>
+
+          <Link
+            href="/demo"
+            className="group relative bg-white border border-slate-300 hover:border-orange-400 text-slate-700 hover:text-orange-700 font-semibold py-3 px-8 rounded-xl text-base transition-all duration-300 hover:shadow-lg hover:bg-orange-50"
+          >
             <span className="flex items-center justify-center">
-              <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="mr-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               View Demo
             </span>
-          </button>
+          </Link>
         </div>
-        
+
+        {/* Ticket-Style Feature Cards */}
+        <div className="max-w-6xl mx-auto mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Log Your Games Ticket */}
+            <a
+              href="/track"
+              className="group relative bg-white rounded-2xl shadow-lg border-2 border-slate-200 hover:border-orange-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
+            >
+              <div className="relative">
+                {/* Header stripe */}
+                <div className="bg-orange-600 text-white px-6 py-2 text-xs font-bold tracking-wider">
+                  RESTUB • LOG YOUR GAMES
+                </div>
+                {/* Perforated edge effect */}
+                <div className="absolute right-0 top-8 bottom-0 w-8 bg-orange-50 border-l-2 border-dashed border-orange-300">
+                  <div className="text-orange-600 transform rotate-90 text-xs font-mono mt-16 whitespace-nowrap">
+                    001
+                  </div>
+                </div>
+                <div className="p-6 pr-12">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                    Log Your Games
+                  </h3>
+                  <p className="text-slate-600 text-sm mb-4">
+                    Record every stadium visit with detailed game info, scores, and memorable moments
+                  </p>
+                  <div className="flex justify-between items-center text-xs text-slate-500 font-mono">
+                    <span>ADMIT ONE</span>
+                    <span>SECTION: TRACK</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            {/* Smart Memory Assistant */}
+            <a
+              href="/ai-help"
+              className="group relative bg-white rounded-2xl shadow-lg border-2 border-slate-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
+            >
+              <div className="relative">
+                {/* Header stripe */}
+                <div className="bg-blue-600 text-white px-6 py-2 text-xs font-bold tracking-wider">
+                  RESTUB • SMART MEMORY ASSISTANT
+                </div>
+                {/* Perforated edge effect */}
+                <div className="absolute right-0 top-8 bottom-0 w-8 bg-blue-50 border-l-2 border-dashed border-blue-300">
+                  <div className="text-blue-600 transform rotate-90 text-xs font-mono mt-16 whitespace-nowrap">
+                    002
+                  </div>
+                </div>
+                <div className="p-6 pr-12">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                    Fill In The Gaps With AI
+                  </h3>
+                  <p className="text-slate-600 text-sm mb-4">
+                    Import game details from your email and get intelligent suggestions to enhance your memories
+                  </p>
+                  <div className="flex justify-between items-center text-xs text-slate-500 font-mono">
+                    <span>ADMIT ONE</span>
+                    <span>SECTION: ENHANCE</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            {/* Organize & Share */}
+            <a
+              href="/login"
+              className="group relative bg-white rounded-2xl shadow-lg border-2 border-slate-200 hover:border-green-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
+            >
+              <div className="relative">
+                {/* Header stripe */}
+                <div className="bg-green-600 text-white px-6 py-2 text-xs font-bold tracking-wider">
+                  RESTUB • ORGANIZE & SHARE
+                </div>
+                {/* Perforated edge effect */}
+                <div className="absolute right-0 top-8 bottom-0 w-8 bg-green-50 border-l-2 border-dashed border-green-300">
+                  <div className="text-green-600 transform rotate-90 text-xs font-mono mt-16 whitespace-nowrap">
+                    003
+                  </div>
+                </div>
+                <div className="p-6 pr-12">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                    Organize & Share
+                  </h3>
+                  <p className="text-slate-600 text-sm mb-4">
+                    Build your personal sports collection and share epic moments with fellow fans
+                  </p>
+                  <div className="flex justify-between items-center text-xs text-slate-500 font-mono">
+                    <span>ADMIT MANY</span>
+                    <span>SECTION: CONNECT</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
         {/* Stats/Social Proof */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-gray-500">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-slate-600 font-medium">
           <div className="flex items-center">
             <div className="flex -space-x-2 mr-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full border-2 border-white"></div>
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full border-2 border-white"></div>
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full border-2 border-white"></div>
+              <div className="w-8 h-8 bg-orange-500 border-2 border-orange-600 rounded-full"></div>
+              <div className="w-8 h-8 bg-blue-600 border-2 border-blue-700 rounded-full"></div>
+              <div className="w-8 h-8 bg-slate-600 border-2 border-slate-700 rounded-full"></div>
             </div>
-            <span>Join 10,000+ music lovers</span>
+            <span>Join 10,000+ sports fans tracking games</span>
           </div>
           <div className="flex items-center">
-            <svg className="w-5 h-5 text-yellow-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+              className="w-5 h-5 text-yellow-500 mr-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
             <span>4.9/5 from early users</span>
           </div>
           <div className="flex items-center">
-            <svg className="w-5 h-5 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-5 h-5 text-orange-500 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
-            <span>Launch Week Special</span>
+            <span>Stadium Memories Preserved</span>
           </div>
         </div>
       </div>
