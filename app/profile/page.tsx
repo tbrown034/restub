@@ -222,7 +222,7 @@ export default function ProfilePage() {
                   <p className="text-slate-600">Manage your games and create custom lists</p>
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button className="bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors">
                   Account Settings
                 </button>
@@ -524,7 +524,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={createNewList}
                   disabled={!newListName.trim()}

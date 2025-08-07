@@ -430,7 +430,7 @@ const AddExperienceForm = () => {
                 </div>
 
                 {/* Submit Buttons */}
-                <div className="flex justify-center gap-6 pt-6">
+                <div className="flex flex-col sm:flex-row justify-center gap-6 pt-6">
                   <button 
                     type="submit"
                     className="bg-orange-600 border-2 border-orange-700 text-white font-bold py-5 px-16 rounded-3xl text-xl transition-all duration-300 hover:bg-orange-700 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25"
@@ -501,7 +501,7 @@ const AddExperienceForm = () => {
                 </div>
               </div>
 
-              <div className="flex justify-center gap-6">
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <button 
                   onClick={handleGameSearch}
                   disabled={isSearching}
@@ -632,7 +632,7 @@ const AddExperienceForm = () => {
                 </div>
               )}
 
-              <div className="flex justify-center gap-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
                 {selectedGameId && (
                   <div className="flex flex-col gap-3">
                     <button 
