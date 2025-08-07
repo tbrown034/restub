@@ -39,7 +39,7 @@ const AddExperienceForm = () => {
       const results = await searchGame(formData);
       setSearchResults(results);
       setCurrentStep('results');
-    } catch (error) {
+    } catch {
       setSearchError('Failed to search for games. Please try again.');
     } finally {
       setIsSearching(false);
@@ -261,9 +261,9 @@ const AddExperienceForm = () => {
                         className="w-full px-4 py-3 rounded-xl border-2 border-orange-200 focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 transition-all duration-200 bg-white/80 text-lg font-medium"
                         onChange={(e) => {
                           // We'll handle this with state if needed
-                          const sections = document.querySelectorAll('[data-date-section]');
+                          const sections = document.querySelectorAll('[data-date-section]') as NodeListOf<HTMLElement>;
                           sections.forEach(section => section.style.display = 'none');
-                          const targetSection = document.querySelector(`[data-date-section="${e.target.value}"]`);
+                          const targetSection = document.querySelector(`[data-date-section="${e.target.value}"]`) as HTMLElement;
                           if (targetSection) targetSection.style.display = 'block';
                         }}
                       >
@@ -624,7 +624,7 @@ const AddExperienceForm = () => {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-slate-700 mb-4">
-                    Couldn't Find a Match
+                    Couldn&apos;t Find a Match
                   </h3>
                   <p className="text-xl text-slate-600">
                     We need more information to identify this game. Try adding more specific details like the final score, notable plays, or weather conditions.

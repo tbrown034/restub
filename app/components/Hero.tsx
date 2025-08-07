@@ -7,13 +7,13 @@ const Hero = () => {
         {/* Main heading */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-8 sm:mb-10 leading-tight tracking-tight">
           <span className="text-orange-600 block">ReStub</span>
-          <span className="text-slate-800 block">Your Sports</span>
+          <span className="text-gray-800 block">Your Sports</span>
           <span className="text-blue-600 block">Memory Keeper</span>
         </h1>
 
         {/* Balanced Subtitle */}
         <div className="mb-10 max-w-4xl mx-auto">
-          <h2 className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium text-center">
+          <h2 className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium text-center">
             Never forget that incredible game experience.
             <a
               href="/log"
@@ -66,7 +66,7 @@ const Hero = () => {
 
           <Link
             href="/demo"
-            className="group relative bg-white border border-slate-300 hover:border-orange-400 text-slate-700 hover:text-orange-700 font-semibold py-3 px-8 rounded-xl text-base transition-all duration-300 hover:shadow-lg hover:bg-orange-50"
+            className="group relative bg-white border border-gray-300 hover:border-purple-400 text-gray-700 hover:text-purple-700 font-semibold py-3 px-8 rounded-xl text-base transition-all duration-300 hover:shadow-lg hover:bg-purple-50"
           >
             <span className="flex items-center justify-center">
               <svg
@@ -94,7 +94,7 @@ const Hero = () => {
             {/* Log Your Games Ticket */}
             <a
               href="/track"
-              className="group relative bg-white rounded-2xl shadow-lg border-2 border-slate-200 hover:border-orange-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
+              className="group relative bg-white rounded-2xl shadow-lg border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
             >
               <div className="relative">
                 {/* Header stripe */}
@@ -108,13 +108,13 @@ const Hero = () => {
                   </div>
                 </div>
                 <div className="p-6 pr-12">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
                     Log Your Games
                   </h3>
-                  <p className="text-slate-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4">
                     Record every stadium visit with detailed game info, scores, and memorable moments
                   </p>
-                  <div className="flex justify-between items-center text-xs text-slate-500 font-mono">
+                  <div className="flex justify-between items-center text-xs text-gray-500 font-mono">
                     <span>ADMIT ONE</span>
                     <span>SECTION: TRACK</span>
                   </div>
@@ -125,7 +125,7 @@ const Hero = () => {
             {/* Smart Memory Assistant */}
             <a
               href="/ai-help"
-              className="group relative bg-white rounded-2xl shadow-lg border-2 border-slate-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
+              className="group relative bg-white rounded-2xl shadow-lg border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
             >
               <div className="relative">
                 {/* Header stripe */}
@@ -139,13 +139,13 @@ const Hero = () => {
                   </div>
                 </div>
                 <div className="p-6 pr-12">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
                     Fill In The Gaps With AI
                   </h3>
-                  <p className="text-slate-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4">
                     Import game details from your email and get intelligent suggestions to enhance your memories
                   </p>
-                  <div className="flex justify-between items-center text-xs text-slate-500 font-mono">
+                  <div className="flex justify-between items-center text-xs text-gray-500 font-mono">
                     <span>ADMIT ONE</span>
                     <span>SECTION: ENHANCE</span>
                   </div>
@@ -156,7 +156,7 @@ const Hero = () => {
             {/* Organize & Share */}
             <a
               href="/login"
-              className="group relative bg-white rounded-2xl shadow-lg border-2 border-slate-200 hover:border-green-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
+              className="group relative bg-white rounded-2xl shadow-lg border-2 border-gray-200 hover:border-green-400 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden"
             >
               <div className="relative">
                 {/* Header stripe */}
@@ -170,13 +170,13 @@ const Hero = () => {
                   </div>
                 </div>
                 <div className="p-6 pr-12">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
                     Organize & Share
                   </h3>
-                  <p className="text-slate-600 text-sm mb-4">
+                  <p className="text-gray-600 text-sm mb-4">
                     Build your personal sports collection and share epic moments with fellow fans
                   </p>
-                  <div className="flex justify-between items-center text-xs text-slate-500 font-mono">
+                  <div className="flex justify-between items-center text-xs text-gray-500 font-mono">
                     <span>ADMIT MANY</span>
                     <span>SECTION: CONNECT</span>
                   </div>
@@ -187,12 +187,12 @@ const Hero = () => {
         </div>
 
         {/* Stats/Social Proof */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-slate-600 font-medium">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-gray-600 font-medium">
           <div className="flex items-center">
             <div className="flex -space-x-2 mr-3">
               <div className="w-8 h-8 bg-orange-500 border-2 border-orange-600 rounded-full"></div>
               <div className="w-8 h-8 bg-blue-600 border-2 border-blue-700 rounded-full"></div>
-              <div className="w-8 h-8 bg-slate-600 border-2 border-slate-700 rounded-full"></div>
+              <div className="w-8 h-8 bg-purple-600 border-2 border-purple-700 rounded-full"></div>
             </div>
             <span>Join 10,000+ sports fans tracking games</span>
           </div>

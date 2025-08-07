@@ -122,7 +122,7 @@ export default function TrackPage() {
                   </svg>
                 </div>
                 <h4 className="font-semibold text-slate-800 mb-2">Build Your History</h4>
-                <p className="text-slate-600 text-sm">Create a permanent record of every game you've attended</p>
+                <p className="text-slate-600 text-sm">Create a permanent record of every game you&apos;ve attended</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

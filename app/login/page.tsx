@@ -4,25 +4,25 @@ import Footer from "../components/Footer";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
       <Header />
       <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Login Form */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8">
               <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-slate-800 mb-4">
+                <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-4">
                   Welcome Back
                 </h1>
-                <p className="text-slate-600">
+                <p className="text-slate-600 dark:text-slate-300">
                   Sign in to access your sports memory collection
                 </p>
               </div>
 
               <form className="space-y-6">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     Email Address
                   </label>
                   <input
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
               <div className="mt-6 text-center">
                 <p className="text-slate-600">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <a href="#" className="text-green-600 hover:text-green-700 font-semibold">
                     Sign up (Coming Soon)
                   </a>
@@ -95,7 +95,7 @@ export default function LoginPage() {
                   <div>
                     <h3 className="text-xl font-semibold text-slate-800 mb-2">Rank Your Events</h3>
                     <p className="text-slate-600">
-                      Rate and rank every game you've attended. Create your personal "best games ever" list and compare experiences over time.
+                      Rate and rank every game you&apos;ve attended. Create your personal &ldquo;best games ever&rdquo; list and compare experiences over time.
                     </p>
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export default function LoginPage() {
 
               {/* Stats Preview */}
               <div className="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4">What You'll Get</h4>
+                <h4 className="text-lg font-semibold text-slate-800 mb-4">What You&apos;ll Get</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-600">∞</div>

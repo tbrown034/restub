@@ -75,3 +75,53 @@ This file contains preferences and guidelines for Claude when working on the Res
 - Automatic experience detection feature in development
 - Photo attachments will be added later
 - Export functionality is planned
+
+## Progress
+
+This section tracks major problems tackled and solutions implemented during development.
+
+### 2025-01-XX - Mobile Button Responsiveness Fix
+**Problem**: Button groups were extending off-screen on mobile devices, creating poor UX
+**Solution**: Updated all button containers from `flex gap-x` to `flex flex-col sm:flex-row gap-x` pattern
+**Files Changed**: 
+- `app/catalog/AddExperienceForm.tsx` (3 button groups)
+- `app/catalog/ExperienceCard.tsx` (media upload buttons)  
+- `app/profile/page.tsx` (2 button groups)
+**Result**: All buttons now stack vertically on mobile and display horizontally on larger screens
+
+### 2025-01-XX - Git Merge Conflict Resolution
+**Problem**: Build failing due to unresolved merge conflicts in catalog page
+**Solution**: Cleaned up merge conflict markers and duplicate code sections
+**Files Changed**: `app/catalog/page.tsx`
+**Result**: Build restored, parsing errors eliminated
+
+### 2025-01-XX - ESLint & TypeScript Errors Fixed
+**Problem**: Multiple lint warnings and TypeScript errors preventing clean builds
+**Solution**: 
+- Fixed unescaped apostrophes using `&apos;` HTML entities
+- Removed unused variables and functions
+- Added proper TypeScript type assertions for DOM manipulation
+**Files Changed**: 
+- `app/login/page.tsx`, `app/catalog/AddExperienceForm.tsx`, `app/track/page.tsx` (apostrophes)
+- `app/profile/page.tsx` (unused variables, dead code removal)
+- `app/catalog/AddExperienceForm.tsx` (TypeScript DOM types)
+**Result**: Clean lint output, successful TypeScript compilation
+
+### 2025-01-XX - Dark/Light Mode Implementation
+**Problem**: No dark mode support, user requested readable dark theme with proper toggle
+**Solution**: Implemented complete theme system using React Context + Tailwind CSS v4
+**Components Added**:
+- `tailwind.config.ts` - Dark mode configuration
+- `app/components/ThemeProvider.tsx` - React context for theme management
+- `app/components/ThemeToggle.tsx` - Toggle component with 3 modes (light/dark/system)
+**Files Updated**:
+- `app/layout.tsx` - Added ThemeProvider wrapper and dark mode background classes
+- `app/components/Header.tsx` - Added theme toggle and dark mode styling
+- `app/components/Hero.tsx` - Dark mode text colors
+**Features**:
+- 3-mode toggle: Light → Dark → System (follows OS preference)
+- Persistent localStorage storage
+- Smooth transitions and hover effects
+- Mobile and desktop responsive
+- Zero hydration issues
+**Result**: Full dark/light mode support with beautiful, readable contrast and brand consistency

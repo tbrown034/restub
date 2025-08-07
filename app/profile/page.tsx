@@ -37,10 +37,8 @@ export default function ProfilePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Mock login state
   const [selectedGames, setSelectedGames] = useState<Set<string>>(new Set());
   const [showCreateList, setShowCreateList] = useState(false);
-  const [showAddToExisting, setShowAddToExisting] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListDescription, setNewListDescription] = useState('');
-  const [selectedExistingListId, setSelectedExistingListId] = useState('');
 
   useEffect(() => {
     // Load saved games from localStorage
@@ -95,30 +93,6 @@ export default function ProfilePage() {
     setShowCreateList(false);
   };
 
-  const addToExistingList = () => {
-    if (!selectedExistingListId) return;
-
-    const updatedLists = gameLists.map(list => {
-      if (list.id === selectedExistingListId) {
-        // Add selected games to existing list, avoiding duplicates
-        const existingGameIds = new Set(list.gameIds);
-        const newGameIds = Array.from(selectedGames).filter(gameId => !existingGameIds.has(gameId));
-        return {
-          ...list,
-          gameIds: [...list.gameIds, ...newGameIds]
-        };
-      }
-      return list;
-    });
-
-    setGameLists(updatedLists);
-    localStorage.setItem('restub_lists', JSON.stringify(updatedLists));
-
-    // Reset form
-    setSelectedGames(new Set());
-    setSelectedExistingListId('');
-    setShowAddToExisting(false);
-  };
 
   const publishList = (listId: string) => {
     const updatedLists = gameLists.map(list => 
@@ -296,17 +270,6 @@ export default function ProfilePage() {
                   Add to New List ({selectedGames.size})
                 </button>
                 
-                {gameLists.length > 0 && (
-                  <button 
-                    onClick={() => setShowAddToExisting(true)}
-                    className="bg-green-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-green-700 transition-colors inline-flex items-center gap-2"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    Add to Existing List ({selectedGames.size})
-                  </button>
-                )}
               </>
             )}
           </div>

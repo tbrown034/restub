@@ -92,13 +92,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 px-4 relative`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900 px-4 relative transition-colors`}
       >
         {/* Background decorative elements */}
         <div className="fixed inset-0 overflow-hidden -z-10">
-          <div className="absolute -top-40 -right-32 w-80 h-80 bg-orange-200/40 rounded-full blur-3xl will-change-transform"></div>
-          <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-blue-200/40 rounded-full blur-3xl will-change-transform"></div>
-          <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-slate-200/30 rounded-full blur-3xl will-change-transform"></div>
+          <div className="absolute -top-40 -right-32 w-80 h-80 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-32 w-80 h-80 bg-blue-200/30 dark:bg-blue-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-orange-100/20 dark:bg-orange-500/10 rounded-full blur-3xl"></div>
         </div>
         {children}
       </body>
