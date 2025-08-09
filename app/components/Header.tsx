@@ -37,6 +37,9 @@ const Header = () => {
               <Link href="/demo" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-50 dark:hover:bg-gray-800 transition-all duration-200">
                 Demo
               </Link>
+              <Link href="/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-50 dark:hover:bg-gray-800 transition-all duration-200">
+                Dashboard
+              </Link>
               <div className="ml-4 flex items-center space-x-2">
                 <ThemeToggle />
                 <Link href="/login" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-50 dark:hover:bg-gray-800 transition-all duration-200">
@@ -82,6 +85,9 @@ const Header = () => {
             </Link>
             <Link href="/demo" className="block text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-3 rounded-lg text-base font-semibold hover:bg-purple-50 dark:hover:bg-gray-800 transition-all duration-200">
               Demo
+            </Link>
+            <Link href="/dashboard" className="block text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-3 rounded-lg text-base font-semibold hover:bg-purple-50 dark:hover:bg-gray-800 transition-all duration-200">
+              Dashboard
             </Link>
             <div className="border-t border-purple-200 dark:border-gray-700 pt-4 mt-4">
               <Link href="/login" className="block text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 px-4 py-3 rounded-lg text-base font-semibold hover:bg-purple-50 dark:hover:bg-gray-800 transition-all duration-200">

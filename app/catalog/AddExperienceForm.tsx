@@ -535,75 +535,94 @@ const AddExperienceForm = () => {
 
       {/* Results Section */}
       {showForm && currentStep === 'results' && (
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50">
           <div className="max-w-6xl mx-auto">
-            <div className="bg-slate-50 rounded-3xl p-10 shadow-2xl border-4 border-green-300">
-              <h2 className="text-4xl font-bold text-center mb-10 text-slate-800">
-                Game Search Results
+            <div className="text-center mb-12">
+              <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Found Your Games!
               </h2>
-              
-              {searchResults && searchResults.length > 0 ? (
-                <div className="space-y-6 mb-10">
-                  <p className="text-center text-slate-600 mb-8">
-                    We found {searchResults.length} possible match{searchResults.length > 1 ? 'es' : ''} for your game. Click on the correct one:
-                  </p>
-                  
-                  <div className="grid gap-6">
-                    {searchResults.map((game) => (
-                      <div 
-                        key={game.id}
-                        onClick={() => handleSelectGame(game)}
-                        className={`bg-white rounded-xl p-6 cursor-pointer hover:shadow-lg transition-all duration-200 border-2 ${
-                          selectedGameId === game.id 
-                            ? 'border-green-500 bg-green-50 shadow-lg' 
-                            : 'border-transparent hover:border-green-400'
-                        }`}
-                      >
-                        <div className="flex justify-between items-start">
+              {searchResults && searchResults.length > 0 && (
+                <p className="text-xl text-slate-600 font-medium">
+                  We found {searchResults.length} possible match{searchResults.length > 1 ? 'es' : ''}. Click the + button to add the right one!
+                </p>
+              )}
+            </div>
+            
+            {searchResults && searchResults.length > 0 ? (
+              <div className="space-y-6 mb-12">
+                <div className="grid gap-6">
+                  {searchResults.map((game) => (
+                    <div 
+                      key={game.id}
+                      className={`group relative bg-white rounded-2xl overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] border-2 ${
+                        selectedGameId === game.id 
+                          ? 'border-emerald-400 ring-4 ring-emerald-100 shadow-2xl shadow-emerald-100/50' 
+                          : 'border-slate-200 hover:border-blue-300'
+                      }`}
+                    >
+                      {/* Background gradient */}
+                      <div className={`absolute inset-0 transition-opacity duration-300 ${
+                        selectedGameId === game.id 
+                          ? 'bg-gradient-to-br from-emerald-50/80 to-green-50/80 opacity-100' 
+                          : 'bg-gradient-to-br from-blue-50/30 to-purple-50/30 opacity-0 group-hover:opacity-100'
+                      }`}></div>
+                      
+                      <div className="relative p-8">
+                        <div className="flex items-center justify-between mb-6">
+                          {/* Game Title */}
                           <div className="flex-1">
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="text-xl font-bold text-slate-800">
-                                {game.awayTeam} @ {game.homeTeam}
-                              </h3>
-                              {game.sourceUrl && (
-                                <a 
-                                  href={game.sourceUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                  </svg>
-                                  {game.sourceName || 'Source'}
-                                </a>
-                              )}
-                            </div>
-                            <p className="text-slate-600 mb-2">
-                              <span className="font-semibold">Date:</span> {game.date}
-                            </p>
-                            <p className="text-slate-600 mb-2">
-                              <span className="font-semibold">Venue:</span> {game.venue}
-                            </p>
+                            <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                              {game.awayTeam} @ {game.homeTeam}
+                            </h3>
                             {game.score && (
-                              <p className="text-slate-600 mb-2">
-                                <span className="font-semibold">Score:</span> {game.score}
+                              <p className="text-lg font-semibold text-slate-700 bg-slate-100 inline-block px-3 py-1 rounded-lg">
+                                Final Score: {game.score}
                               </p>
                             )}
-                            <p className="text-slate-600 text-sm">{game.description}</p>
-                            
-                            {selectedGameId === game.id && (
-                              <div className="mt-4 flex items-center text-green-700">
-                                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <span className="font-semibold">Selected - This is your game!</span>
-                              </div>
-                            )}
                           </div>
-                          <div className="ml-4">
-                            <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                          
+                          {/* Add Button */}
+                          <button
+                            onClick={() => handleSelectGame(game)}
+                            className={`relative flex items-center justify-center w-16 h-16 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-110 ${
+                              selectedGameId === game.id 
+                                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200' 
+                                : 'bg-gradient-to-br from-blue-500 to-purple-600 text-white hover:shadow-xl hover:shadow-blue-200/50'
+                            }`}
+                          >
+                            {selectedGameId === game.id ? (
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                              </svg>
+                            ) : (
+                              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Game Details Grid */}
+                        <div className="grid md:grid-cols-3 gap-4 mb-4">
+                          <div className="bg-slate-50 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-semibold text-slate-700">Date</span>
+                            </div>
+                            <p className="text-slate-600 font-medium">{game.date}</p>
+                          </div>
+                          
+                          <div className="bg-slate-50 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-semibold text-slate-700">Venue</span>
+                            </div>
+                            <p className="text-slate-600 font-medium">{game.venue}</p>
+                          </div>
+                          
+                          <div className="bg-slate-50 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-semibold text-slate-700">Match Confidence</span>
+                            </div>
+                            <div className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${
                               game.confidence > 0.8 ? 'bg-green-100 text-green-800' :
                               game.confidence > 0.6 ? 'bg-yellow-100 text-yellow-800' :
                               'bg-red-100 text-red-800'
@@ -612,60 +631,113 @@ const AddExperienceForm = () => {
                             </div>
                           </div>
                         </div>
+
+                        {/* Description */}
+                        {game.description && (
+                          <div className="mb-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <p className="text-slate-700 font-medium">{game.description}</p>
+                          </div>
+                        )}
+
+                        {/* Source Link */}
+                        {game.sourceUrl && (
+                          <div className="flex justify-end">
+                            <a 
+                              href={game.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors hover:underline"
+                            >
+                              <span>View Source: {game.sourceName || 'External Link'}</span>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Selected Indicator */}
+                        {selectedGameId === game.id && (
+                          <div className="mt-6 p-4 bg-emerald-100 rounded-xl border-2 border-emerald-200">
+                            <div className="flex items-center justify-center gap-3 text-emerald-800">
+                              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                              </svg>
+                              <span className="text-lg font-bold">Perfect! This is your game!</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              ) : (
-                <div className="text-center mb-10">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-yellow-100 border-4 border-yellow-300 rounded-2xl flex items-center justify-center">
-                    <svg className="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-700 mb-4">
-                    Couldn&apos;t Find a Match
-                  </h3>
-                  <p className="text-xl text-slate-600">
-                    We need more information to identify this game. Try adding more specific details like the final score, notable plays, or weather conditions.
-                  </p>
+              </div>
+            ) : (
+              <div className="text-center mb-12">
+                <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-yellow-100 to-orange-100 border-4 border-yellow-300 rounded-3xl flex items-center justify-center shadow-xl">
+                  <svg className="w-16 h-16 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
+                <h3 className="text-3xl font-bold text-slate-700 mb-4">
+                  No Matches Found
+                </h3>
+                <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                  We need more information to identify this game. Try adding more specific details like the final score, notable plays, or weather conditions.
+                </p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap justify-center gap-4">
+              {selectedGameId && (
+                <button 
+                  onClick={handleAddToMyList}
+                  className="group relative bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold py-4 px-8 rounded-2xl text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-emerald-200/50 flex items-center gap-3"
+                >
+                  <svg className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span>Add to My Collection</span>
+                </button>
               )}
 
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                {selectedGameId && (
-                  <div className="flex flex-col gap-3">
-                    <button 
-                      onClick={handleAddToMyList}
-                      className="bg-green-600 border-2 border-green-700 text-white font-bold py-4 px-12 rounded-2xl text-lg transition-all duration-300 hover:bg-green-700 hover:scale-105 flex items-center gap-2 justify-center"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      Add Game to My List
-                    </button>
-                    <Link 
-                      href="/profile"
-                      className="text-blue-600 hover:text-blue-800 text-center font-medium transition-colors"
-                    >
-                      View My Profile & Lists →
-                    </Link>
-                  </div>
-                )}
-                <button 
-                  onClick={() => setCurrentStep('form')}
-                  className="bg-orange-600 border-2 border-orange-700 text-white font-bold py-4 px-12 rounded-2xl text-lg transition-all duration-300 hover:bg-orange-700 hover:scale-105"
-                >
-                  Add More Details
-                </button>
-                <button 
-                  onClick={resetForm}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-4 px-12 rounded-2xl text-lg transition-all duration-300 hover:scale-105"
-                >
-                  Start Over
-                </button>
-              </div>
+              <button 
+                onClick={() => setCurrentStep('form')}
+                className="bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-4 px-8 rounded-2xl text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-200/50 flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Add More Details
+              </button>
+
+              <button 
+                onClick={resetForm}
+                className="bg-slate-500 hover:bg-slate-600 text-white font-bold py-4 px-8 rounded-2xl text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Start Over
+              </button>
             </div>
+
+            {/* Profile Link */}
+            {selectedGameId && (
+              <div className="text-center mt-8">
+                <Link 
+                  href="/profile"
+                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-lg transition-colors hover:underline"
+                >
+                  <span>View My Sports Collection</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       )}

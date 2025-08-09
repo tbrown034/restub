@@ -27,6 +27,7 @@ This file contains preferences and guidelines for Claude when working on the Res
 - Use Tailwind CSS for styling with bright, modern design system
 - Maintain consistent gradient themes (vibrant colors, not dark/dreary)
 - Use semantic HTML and accessible markup
+- **ALWAYS use unique keys**: For React lists, always use `crypto.randomUUID()` or combine timestamp + UUID for guaranteed uniqueness. Never rely on Math.random() alone or simple incrementing.
 
 ### Component Structure
 

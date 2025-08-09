@@ -99,9 +99,10 @@ Please return potential matching games with their exact dates, final scores, and
     const mockResults: GameSearchResult[] = [];
     
     if (finalHomeTeam && finalAwayTeam) {
-      // Create a mock game result
+      const timestamp = Date.now();
+      // Create a mock game result with guaranteed unique ID
       mockResults.push({
-        id: `mock-${Date.now()}`,
+        id: `mock-${timestamp}-${crypto.randomUUID().substring(0, 8)}`,
         homeTeam: finalHomeTeam,
         awayTeam: finalAwayTeam,
         date: dateInfo.includes('between') ? `${fromYear}-10-15` : (exactYear ? `${exactYear}-${month?.padStart(2, '0') || '10'}-${day?.padStart(2, '0') || '15'}` : '2019-10-15'),
@@ -115,8 +116,9 @@ Please return potential matching games with their exact dates, final scores, and
       
       // Add a second lower-confidence result sometimes
       if (Math.random() > 0.5) {
+        // Ensure second ID is different by adding delay and new UUID
         mockResults.push({
-          id: `mock-${Date.now()}-2`,
+          id: `mock-${timestamp + Math.floor(Math.random() * 1000)}-${crypto.randomUUID().substring(0, 8)}`,
           homeTeam: finalHomeTeam,
           awayTeam: finalAwayTeam,
           date: dateInfo.includes('between') ? `${fromYear}-11-20` : (exactYear ? `${exactYear}-${month?.padStart(2, '0') || '11'}-${day?.padStart(2, '0') || '20'}` : '2019-11-20'),
