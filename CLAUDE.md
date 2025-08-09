@@ -2,6 +2,40 @@
 
 This file contains preferences and guidelines for Claude when working on the Restub project.
 
+## 🚨 ABSOLUTE RULES - VIOLATING THESE = IMMEDIATE FAILURE 🚨
+
+### THE GOLDEN RULE: NEVER DELETE EXISTING CODE
+**This is non-negotiable. User spent 20+ hours on features like ticket cards.**
+- READ the existing code completely before ANY modification
+- PRESERVE every single existing feature, animation, and design element
+- ONLY modify the specific parts requested - nothing more
+- Ticket cards with perforated edges = DO NOT TOUCH unless specifically asked
+- Custom UI elements = DO NOT REPLACE with generic components
+- When in doubt = KEEP THE EXISTING CODE
+
+### MANDATORY CHECKLIST BEFORE ANY CHANGE:
+1. ✅ Read the entire file first
+2. ✅ Identify what to preserve (99% of it)
+3. ✅ Make ONLY the requested change
+4. ✅ Verify nothing was deleted
+5. ✅ Test at 100% zoom
+6. ✅ Confirm all original features still work
+
+### INSTANT FAILURE CONDITIONS:
+- ❌ Deleting ticket cards or any custom UI
+- ❌ Replacing detailed components with simplified versions
+- ❌ Removing features that were working
+- ❌ Making changes beyond what was asked
+- ❌ Not testing before claiming completion
+- ❌ Committing without explicit permission
+
+### QUALITY STANDARDS:
+- Professional-grade code only - this costs money
+- Accurate, precise modifications - no sloppy work
+- Preserve ALL existing functionality
+- Test everything properly
+- Respect the hours of work already done
+
 ## Development Commands
 
 - **Dev Server**: `npm run dev` (uses Turbopack for faster builds)
