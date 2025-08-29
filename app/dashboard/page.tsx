@@ -6,8 +6,9 @@ import { getUsers, deleteUser } from './actions';
 export default async function Dashboard({
   searchParams
 }: {
-  searchParams: { success?: string; error?: string }
+  searchParams: Promise<{ success?: string; error?: string }>
 }) {
+  const params = await searchParams;
   const users = await getUsers();
   const hasDatabase = process.env.DATABASE_URL ? true : false;
   
@@ -21,7 +22,7 @@ export default async function Dashboard({
           </h1>
           
           {/* Success/Error Messages */}
-          {searchParams.success && (
+          {params.success && (
             <div className="mb-8 p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-700 rounded-xl">
               <div className="flex items-center gap-3">
                 <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +36,7 @@ export default async function Dashboard({
             </div>
           )}
           
-          {searchParams.error === 'no-database-url' && (
+          {params.error === 'no-database-url' && (
             <div className="mb-8 p-6 bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-xl">
               <div className="flex items-center gap-3">
                 <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +50,7 @@ export default async function Dashboard({
             </div>
           )}
           
-          {searchParams.error === 'connection-failed' && (
+          {params.error === 'connection-failed' && (
             <div className="mb-8 p-6 bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-xl">
               <div className="flex items-center gap-3">
                 <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,7 +65,7 @@ export default async function Dashboard({
           )}
           
           {/* Database Connection Status */}
-          {!hasDatabase && !searchParams.error && (
+          {!hasDatabase && !params.error && (
             <div className="mb-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-300 dark:border-yellow-700 rounded-xl">
               <div className="flex items-center gap-3">
                 <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
