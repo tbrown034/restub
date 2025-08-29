@@ -13,10 +13,12 @@ interface SavedGame {
   date: string;
   venue: string;
   score?: string;
+  description?: string;
   gameDetails?: string;
   sourceUrl?: string;
   sourceName?: string;
   rating?: number;
+  attended?: boolean;
   whoWith?: string;
   personalMemories?: string;
   savedAt: string;
@@ -146,6 +148,22 @@ export default function ProfilePage() {
     return savedGames.find(game => game.id === gameId);
   };
 
+  const updateGameRating = (gameId: string, rating: number) => {
+    const updatedGames = savedGames.map(game => 
+      game.id === gameId ? { ...game, rating } : game
+    );
+    setSavedGames(updatedGames);
+    localStorage.setItem('restub_games', JSON.stringify(updatedGames));
+  };
+
+  const toggleGameAttendance = (gameId: string) => {
+    const updatedGames = savedGames.map(game => 
+      game.id === gameId ? { ...game, attended: !game.attended } : game
+    );
+    setSavedGames(updatedGames);
+    localStorage.setItem('restub_games', JSON.stringify(updatedGames));
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen flex flex-col bg-slate-50">
@@ -178,31 +196,28 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
       <Header />
       <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Profile Header */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 mb-8 border border-slate-200 dark:border-slate-700">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-800">Your Sports Profile</h1>
-                  <p className="text-slate-600">Manage your games and create custom lists</p>
+                  <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Your Sports Profile</h1>
+                  <p className="text-slate-600 dark:text-slate-400">Manage your games and create custom lists</p>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
-                <button className="bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors">
-                  Account Settings
-                </button>
                 <button 
                   onClick={handleLogout}
-                  className="bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors"
+                  className="bg-slate-600 dark:bg-slate-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors"
                 >
                   Sign Out
                 </button>
@@ -212,25 +227,25 @@ export default function ProfilePage() {
 
           {/* Stats Overview */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="text-2xl font-bold text-orange-600 mb-2">{savedGames.length}</div>
-              <div className="text-slate-600">Games Logged</div>
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-2">{savedGames.length}</div>
+              <div className="text-slate-600 dark:text-slate-400">Games Logged</div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="text-2xl font-bold text-blue-600 mb-2">{gameLists.length}</div>
-              <div className="text-slate-600">Lists Created</div>
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">{savedGames.filter(game => game.attended).length}</div>
+              <div className="text-slate-600 dark:text-slate-400">Games Attended</div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="text-2xl font-bold text-green-600 mb-2">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
                 {gameLists.filter(list => list.isPublished).length}
               </div>
-              <div className="text-slate-600">Published Lists</div>
+              <div className="text-slate-600 dark:text-slate-400">Published Lists</div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="text-2xl font-bold text-purple-600 mb-2">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                 {savedGames.filter(game => game.rating && game.rating >= 4).length}
               </div>
-              <div className="text-slate-600">4+ Star Games</div>
+              <div className="text-slate-600 dark:text-slate-400">4+ Star Games</div>
             </div>
           </div>
 
@@ -277,8 +292,8 @@ export default function ProfilePage() {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Saved Games */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-slate-800 mb-6">Your Saved Games</h2>
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Your Saved Games</h2>
                 
                 {savedGames.length === 0 ? (
                   <div className="text-center py-12">
@@ -301,46 +316,117 @@ export default function ProfilePage() {
                     {savedGames.map((game) => (
                       <div 
                         key={game.id}
-                        className={`border-2 rounded-xl p-4 transition-all cursor-pointer ${
+                        className={`border-2 rounded-xl p-4 transition-all ${
                           selectedGames.has(game.id) 
-                            ? 'border-blue-400 bg-blue-50' 
-                            : 'border-slate-200 hover:border-slate-300'
+                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                            : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 dark:bg-slate-800/50'
                         }`}
-                        onClick={() => toggleGameSelection(game.id)}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                              <h3 className="font-bold text-slate-800">
+                              <button
+                                onClick={() => toggleGameAttendance(game.id)}
+                                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                                  game.attended 
+                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
+                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+                                }`}
+                              >
+                                {game.attended ? '✓ Attended' : 'Not Attended'}
+                              </button>
+                              <h3 className="font-bold text-slate-800 dark:text-slate-100">
                                 {game.awayTeam} @ {game.homeTeam}
                               </h3>
-                              <span className="text-xs bg-slate-200 px-2 py-1 rounded-full text-slate-600 uppercase">
+                              <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full text-slate-600 dark:text-slate-400 uppercase">
                                 {game.league}
                               </span>
                             </div>
                             
-                            <div className="flex items-center gap-4 text-sm text-slate-600 mb-2">
+                            <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-2">
                               <span>{new Date(game.date).toLocaleDateString()}</span>
                               <span>{game.venue}</span>
                               {game.score && <span className="font-semibold">{game.score}</span>}
                             </div>
                             
-                            {game.rating && <StarRating rating={game.rating} />}
+                            {game.description && (
+                              <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 rounded-lg p-2 mb-2">{game.description}</p>
+                            )}
+                            
+                            {game.gameDetails && (
+                              <p className="text-sm text-slate-600 dark:text-slate-400 italic mb-2">&ldquo;{game.gameDetails}&rdquo;</p>
+                            )}
+                            
+                            {/* Interactive Star Rating */}
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className="text-sm text-slate-600 dark:text-slate-400">Rating:</span>
+                              <div className="flex items-center gap-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <button
+                                    key={star}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateGameRating(game.id, star);
+                                    }}
+                                    className="group"
+                                  >
+                                    <svg
+                                      className={`w-5 h-5 transition-colors ${
+                                        star <= (game.rating || 0) 
+                                          ? 'text-yellow-400 dark:text-yellow-500' 
+                                          : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-300 dark:group-hover:text-yellow-600'
+                                      }`}
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                  </button>
+                                ))}
+                                {game.rating && (
+                                  <span className="text-sm text-slate-500 dark:text-slate-400 ml-1">
+                                    {game.rating}/5
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                             
                             {game.whoWith && (
                               <p className="text-sm text-slate-600 mt-2">With: {game.whoWith}</p>
                             )}
+                            
+                            {game.sourceUrl && (
+                              <a 
+                                href={game.sourceUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 mt-2"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                {game.sourceName || 'View Source'}
+                              </a>
+                            )}
                           </div>
                           
                           <div className="flex items-center gap-2">
-                            {selectedGames.has(game.id) && (
-                              <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center">
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleGameSelection(game.id);
+                              }}
+                              className="w-6 h-6 rounded border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center transition-colors hover:border-blue-400 dark:hover:border-blue-500"
+                            >
+                              {selectedGames.has(game.id) && (
+                                <div className="w-full h-full bg-blue-600 rounded-sm flex items-center justify-center">
+                                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                              )}
+                            </button>
                           </div>
                         </div>
                       </div>

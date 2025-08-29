@@ -4,14 +4,16 @@ import { searchGame, addExperience } from './actions';
 import { getAllTeamsForDropdown } from './teams';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import type { GameSearchResult } from './actions';
 
 type Step = 'form' | 'review' | 'results';
 
 const AddExperienceForm = () => {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>('form');
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
   const [selectedLeague, setSelectedLeague] = useState('');
   const [homeTeamSelection, setHomeTeamSelection] = useState('');
   const [awayTeamSelection, setAwayTeamSelection] = useState('');
@@ -72,6 +74,7 @@ const AddExperienceForm = () => {
       date: selectedGame.date,
       venue: selectedGame.venue,
       score: selectedGame.score,
+      description: selectedGame.description,  // Add description
       gameDetails: formData.get('gameDetails'),
       sourceUrl: selectedGame.sourceUrl,
       sourceName: selectedGame.sourceName,
@@ -84,13 +87,13 @@ const AddExperienceForm = () => {
     // Also save to the existing experience system
     await addExperience(formData);
     
-    // Reset the form and hide search results
-    resetForm();
+    // Redirect to profile page to see the saved game
+    router.push('/profile');
   };
 
   const resetForm = () => {
     setCurrentStep('form');
-    setShowForm(false);
+    setShowForm(true);
     setFormData(null);
     setSearchResults(null);
     setSearchError(null);
@@ -117,45 +120,13 @@ const AddExperienceForm = () => {
         
         <div className="relative max-w-4xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            <span className="text-slate-800">
-              Track Your
-            </span>
+            <span className="text-slate-800">Manual</span>
             <br />
-            <span className="text-orange-600">
-              Sports Games
-            </span>
+            <span className="text-orange-600">+ AI Assist</span>
           </h1>
-          
-          <p className="text-xl sm:text-2xl text-slate-600 font-medium mb-12 max-w-3xl mx-auto leading-relaxed">
-            Never forget that incredible game you witnessed! Track NFL, NBA, MLB, and NHL games - 
-            capture every detail and build your sports legacy.
+          <p className="text-xl sm:text-2xl text-slate-600 font-medium mb-10 max-w-3xl mx-auto leading-relaxed">
+            Enter what you remember — teams, venue, timeframe, score — and we’ll search and match the exact game for you.
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
-            <button 
-              className="group relative bg-orange-600 border-2 border-orange-700 text-white font-bold py-5 px-12 rounded-3xl text-xl transition-all duration-300 hover:bg-orange-700 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25"
-              onClick={() => alert('Ticket scanning coming soon!')}
-            >
-              <span className="relative z-10 flex items-center justify-center">
-                Scan Ticket
-                <svg className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </button>
-            
-            <button 
-              className="group relative bg-white border-2 border-orange-300 hover:border-orange-500 text-orange-700 hover:text-orange-800 font-bold py-5 px-12 rounded-3xl text-xl transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-orange-50"
-              onClick={() => setShowForm(true)}
-            >
-              <span className="flex items-center justify-center">
-                <svg className="mr-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Add Game Manually
-              </span>
-            </button>
-          </div>
         </div>
       </section>
 

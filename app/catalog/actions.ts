@@ -1,29 +1,10 @@
 'use server';
 
-import { redirect } from 'next/navigation';
+import OpenAI from 'openai';
 
-export interface Experience {
-  id: string;
-  league: string; // nfl, nba, mlb, nhl
-  homeTeam: string;
-  awayTeam: string;
-  customHomeTeam?: string;
-  customAwayTeam?: string;
-  date: string;
-  venue: string;
-  gameDetails: string;
-  selectedGameId?: string;
-  finalDate?: string;
-  finalVenue?: string;
-  finalScore?: string;
-  // New enhanced fields
-  rating?: number; // 1-5 stars
-  whoWith?: string;
-  personalMemories?: string;
-  photos?: string[]; // URLs or file paths
-  videos?: string[]; // URLs or file paths
-  createdAt: Date;
-}
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || process.env.OPEN_AI_KEY,
+});
 
 export interface GameSearchResult {
   id: string;
@@ -32,231 +13,199 @@ export interface GameSearchResult {
   date: string;
   venue: string;
   score?: string;
-  description: string;
+  description?: string;
   confidence: number;
   sourceUrl?: string;
   sourceName?: string;
 }
 
-// In a real app, this would be stored in a database
-let experiences: Experience[] = [];
+export interface Experience {
+  id: string;
+  league: string;
+  homeTeam: string;
+  awayTeam: string;
+  customHomeTeam?: string;
+  customAwayTeam?: string;
+  date: string;
+  venue: string;
+  score?: string;
+  gameDetails?: string;
+  personalMemories?: string;
+  whoWith?: string;
+  rating?: number;
+  savedAt: string;
+}
 
-export async function searchGame(formData: FormData): Promise<GameSearchResult[]> {
-  const league = formData.get('league') as string;
-  const homeTeam = formData.get('homeTeam') as string;
-  const awayTeam = formData.get('awayTeam') as string;
-  const customHomeTeam = formData.get('customHomeTeam') as string;
-  const customAwayTeam = formData.get('customAwayTeam') as string;
-  const venue = formData.get('venue') as string;
-  const gameDetails = formData.get('gameDetails') as string;
-  
-  // Build date info
-  const exactYear = formData.get('exactYear') as string;
-  const month = formData.get('month') as string;
-  const day = formData.get('day') as string;
-  const fromYear = formData.get('fromYear') as string;
-  const toYear = formData.get('toYear') as string;
-  
+/** ---------------------- Query builder (unchanged) ---------------------- */
+function buildSearchQuery(formData: FormData): string {
+  const league = formData.get('league')?.toString() || '';
+  const homeTeam =
+    formData.get('homeTeam') === 'custom'
+      ? formData.get('customHomeTeam')?.toString()
+      : formData.get('homeTeam')?.toString();
+  const awayTeam =
+    formData.get('awayTeam') === 'custom'
+      ? formData.get('customAwayTeam')?.toString()
+      : formData.get('awayTeam')?.toString();
+  const venue = formData.get('venue')?.toString() || '';
+  const gameDetails = formData.get('gameDetails')?.toString() || '';
+
   let dateInfo = '';
-  if (exactYear) {
-    if (month && day) {
-      dateInfo = `${month}/${day}/${exactYear}`;
-    } else if (month) {
-      dateInfo = `${month}/${exactYear}`;
-    } else {
-      dateInfo = exactYear;
+  const dateType = formData.get('dateType')?.toString();
+
+  if (dateType === 'exact') {
+    const month = formData.get('month')?.toString();
+    const day = formData.get('day')?.toString();
+    const year = formData.get('exactYear')?.toString();
+    if (year) {
+      if (month && day) dateInfo = `on ${month}/${day}/${year}`;
+      else if (month) dateInfo = `in ${month}/${year}`;
+      else dateInfo = `in ${year}`;
     }
-  } else if (fromYear && toYear) {
-    dateInfo = `between ${fromYear} and ${toYear}`;
+  } else if (dateType === 'approximate') {
+    const timeframe = formData.get('approxTimeframe')?.toString();
+    const year = formData.get('approxYear')?.toString();
+    if (timeframe && year) dateInfo = `during ${timeframe} ${year}`;
+  } else if (dateType === 'range') {
+    const fromYear = formData.get('fromYear')?.toString();
+    const toYear = formData.get('toYear')?.toString();
+    if (fromYear && toYear) dateInfo = `between ${fromYear} and ${toYear}`;
+  } else if (dateType === 'context') {
+    const dayOfWeek = formData.get('dayOfWeek')?.toString();
+    const timeOfDay = formData.get('timeOfDay')?.toString();
+    const startYear = formData.get('contextYearStart')?.toString();
+    const endYear = formData.get('contextYearEnd')?.toString();
+    const contextParts: string[] = [];
+    if (dayOfWeek) contextParts.push(`on a ${dayOfWeek}`);
+    if (timeOfDay) contextParts.push(`${timeOfDay}`);
+    if (startYear && endYear) contextParts.push(`between ${startYear}-${endYear}`);
+    if (contextParts.length > 0) dateInfo = contextParts.join(', ');
   }
-  
-  // Build team names
-  const finalHomeTeam = homeTeam === 'custom' ? customHomeTeam : homeTeam;
-  const finalAwayTeam = awayTeam === 'custom' ? customAwayTeam : awayTeam;
-  
-  // Create prompt for LLM
-  const prompt = `
-Find a ${league.toUpperCase()} game with the following details:
-- Home Team: ${finalHomeTeam}
-- Away Team: ${finalAwayTeam}
-- Date: ${dateInfo}
-- Venue: ${venue || 'Not specified'}
-- Additional Details: ${gameDetails || 'None provided'}
 
-Please return potential matching games with their exact dates, final scores, and venue information. Include a confidence score for each match.
-  `.trim();
+  let query = `Find ${league.toUpperCase()} games`;
+  if (homeTeam && awayTeam) query += ` between ${awayTeam} at ${homeTeam}`;
+  else if (homeTeam) query += ` with ${homeTeam} as home team`;
+  else if (awayTeam) query += ` with ${awayTeam} as away team`;
 
-  console.log('LLM Prompt:', prompt);
+  if (dateInfo) query += ` ${dateInfo}`;
+  if (venue) query += ` played at ${venue}`;
+  if (gameDetails) query += `. Additional details: ${gameDetails}`;
 
-  // TODO: Replace this with actual LLM API call when API key is ready
-  // For now, return mock results based on the input
-  
-  try {
-    // Mock API delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Return mock results for testing
-    const mockResults: GameSearchResult[] = [];
-    
-    if (finalHomeTeam && finalAwayTeam) {
-      const timestamp = Date.now();
-      // Create a mock game result with guaranteed unique ID
-      mockResults.push({
-        id: `mock-${timestamp}-${crypto.randomUUID().substring(0, 8)}`,
-        homeTeam: finalHomeTeam,
-        awayTeam: finalAwayTeam,
-        date: dateInfo.includes('between') ? `${fromYear}-10-15` : (exactYear ? `${exactYear}-${month?.padStart(2, '0') || '10'}-${day?.padStart(2, '0') || '15'}` : '2019-10-15'),
-        venue: venue || 'Stadium Name',
-        score: '24-17',
-        description: `${league.toUpperCase()} game between ${finalAwayTeam} and ${finalHomeTeam}. ${gameDetails || 'Regular season matchup.'}`,
-        confidence: 0.85,
-        sourceUrl: `https://www.espn.com/${league}/game/_/gameId/123456789`,
-        sourceName: 'ESPN'
-      });
-      
-      // Add a second lower-confidence result sometimes
-      if (Math.random() > 0.5) {
-        // Ensure second ID is different by adding delay and new UUID
-        mockResults.push({
-          id: `mock-${timestamp + Math.floor(Math.random() * 1000)}-${crypto.randomUUID().substring(0, 8)}`,
-          homeTeam: finalHomeTeam,
-          awayTeam: finalAwayTeam,
-          date: dateInfo.includes('between') ? `${fromYear}-11-20` : (exactYear ? `${exactYear}-${month?.padStart(2, '0') || '11'}-${day?.padStart(2, '0') || '20'}` : '2019-11-20'),
-          venue: venue || 'Alternative Stadium',
-          score: '31-14',
-          description: `Another possible ${league.toUpperCase()} matchup. Could be a different game from the same season.`,
-          confidence: 0.65,
-          sourceUrl: `https://www.nfl.com/games/${finalHomeTeam.toLowerCase()}-vs-${finalAwayTeam.toLowerCase()}`,
-          sourceName: 'NFL.com'
-        });
-      }
+  return query;
+}
+
+/** ---------------------- Search with web grounding ---------------------- */
+export async function searchGame(formData: FormData): Promise<GameSearchResult[]> {
+  const searchQuery = buildSearchQuery(formData);
+
+  const systemPrompt = `You are a sports game database assistant. Search for real sports games based on the provided information.
+
+IMPORTANT: You MUST return ONLY valid JSON with no additional text, markdown, or explanations.
+
+Return your response in this exact JSON format:
+{
+  "games": [
+    {
+      "id": "unique_id",
+      "homeTeam": "Team Name",
+      "awayTeam": "Team Name",
+      "date": "Month DD, YYYY",
+      "venue": "Stadium/Arena Name",
+      "score": "Away XX - Home XX",
+      "description": "Brief game summary",
+      "confidence": 0.95,
+      "sourceUrl": "URL to source",
+      "sourceName": "Source name"
     }
-    
-    return mockResults;
-    
-    // TODO: Uncomment and implement when API key is ready
-    /*
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
+  ]
+}
+
+Rules:
+- Use web search to find real, accurate game information
+- Return up to 5 most likely matches, sorted by confidence
+- Include playoff/championship designation if applicable
+- If the score is not available, omit the score field
+- Confidence should reflect how well the game matches ALL provided criteria
+- Output ONLY the JSON object, nothing else`;
+
+  try {
+    // Using the GPT-5 Responses API with web search
+    const response = await openai.responses.create({
+      model: 'gpt-5-mini',
+      input: `${systemPrompt}\n\n${searchQuery}`,
+      reasoning: { effort: 'low' },  // Low effort for web search compatibility
+      text: { 
+        verbosity: 'low'  // Concise output
       },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a sports database expert. Return game results in JSON format with id, homeTeam, awayTeam, date (YYYY-MM-DD), venue, score, description, and confidence (0-1).'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.3,
-      }),
+      tools: [
+        { type: 'web_search' }  // Enable web search for real game data
+      ]
     });
 
-    const data = await response.json();
-    const content = data.choices[0].message.content;
-    
-    // Parse the JSON response
-    try {
-      const results = JSON.parse(content);
-      return Array.isArray(results) ? results : [results];
-    } catch (parseError) {
-      console.error('Failed to parse LLM response:', parseError);
-      return [];
+    const content = response.output_text;
+    if (!content) {
+      throw new Error('No response from AI');
     }
-    */
-    
+
+    const result = JSON.parse(content);
+    const games = result.games || [];
+
+    // Ensure all games have required fields
+    return games.map((game: Partial<GameSearchResult>) => ({
+      id: game.id || crypto.randomUUID(),
+      homeTeam: game.homeTeam || 'Unknown',
+      awayTeam: game.awayTeam || 'Unknown',
+      date: game.date || 'Unknown Date',
+      venue: game.venue || 'Unknown Venue',
+      score: game.score,
+      description: game.description,
+      confidence: game.confidence || 0.5,
+      sourceUrl: game.sourceUrl,
+      sourceName: game.sourceName
+    })).slice(0, 5);
   } catch (error) {
-    console.error('Game search error:', error);
-    throw new Error('Failed to search for games');
+    console.error('Error searching for game:', error);
+    // Return empty array to trigger proper error UI
+    return [];
   }
 }
 
-export async function addExperience(formData: FormData) {
-  const homeTeam = formData.get('homeTeam') as string;
-  const awayTeam = formData.get('awayTeam') as string;
-  
-  // Build date string from separate fields
-  const exactYear = formData.get('exactYear') as string;
-  const month = formData.get('month') as string;
-  const day = formData.get('day') as string;
-  const fromYear = formData.get('fromYear') as string;
-  const toYear = formData.get('toYear') as string;
-  
-  let dateString = '';
-  
-  // Use final date if available (from AI search results)
-  const finalDate = formData.get('finalDate') as string;
-  if (finalDate) {
-    dateString = finalDate;
-  } else if (exactYear) {
-    if (month && day) {
-      dateString = `${exactYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    } else if (month) {
-      dateString = `${exactYear}-${month.padStart(2, '0')}`;
-    } else {
-      dateString = exactYear;
-    }
-  } else if (fromYear && toYear) {
-    dateString = `${fromYear}-${toYear}`;
-  }
-  
-  const newExperience: Experience = {
-    id: Date.now().toString(),
-    league: formData.get('league') as string,
-    homeTeam: homeTeam === 'custom' ? '' : homeTeam,
-    awayTeam: awayTeam === 'custom' ? '' : awayTeam,
-    customHomeTeam: homeTeam === 'custom' ? formData.get('customHomeTeam') as string : undefined,
-    customAwayTeam: awayTeam === 'custom' ? formData.get('customAwayTeam') as string : undefined,
-    date: dateString,
-    venue: formData.get('finalVenue') as string || formData.get('venue') as string,
-    gameDetails: formData.get('gameDetails') as string,
-    selectedGameId: formData.get('selectedGameId') as string || undefined,
-    finalDate: formData.get('finalDate') as string || undefined,
-    finalVenue: formData.get('finalVenue') as string || undefined,
-    finalScore: formData.get('finalScore') as string || undefined,
-    createdAt: new Date()
+/** ---------------------- Save/load (server-safe placeholders) ---------------------- */
+export async function addExperience(formData: FormData): Promise<void> {
+  const experience: Experience = {
+    id: formData.get('selectedGameId')?.toString() || crypto.randomUUID(),
+    league: formData.get('league')?.toString() || '',
+    homeTeam: formData.get('homeTeam')?.toString() || '',
+    awayTeam: formData.get('awayTeam')?.toString() || '',
+    customHomeTeam:
+      formData.get('homeTeam') === 'custom'
+        ? formData.get('customHomeTeam')?.toString()
+        : undefined,
+    customAwayTeam:
+      formData.get('awayTeam') === 'custom'
+        ? formData.get('customAwayTeam')?.toString()
+        : undefined,
+    date: formData.get('finalDate')?.toString() || '',
+    venue: formData.get('finalVenue')?.toString() || '',
+    score: formData.get('finalScore')?.toString(),
+    gameDetails: formData.get('gameDetails')?.toString(),
+    personalMemories: formData.get('personalMemories')?.toString(),
+    whoWith: formData.get('whoWith')?.toString(),
+    rating: formData.get('rating') ? Number(formData.get('rating')) : undefined,
+    savedAt: new Date().toISOString(),
   };
 
-  experiences.unshift(newExperience);
-  redirect('/catalog');
-}
-
-export async function updateExperience(id: string, formData: FormData) {
-  const homeTeam = formData.get('homeTeam') as string;
-  const awayTeam = formData.get('awayTeam') as string;
-  
-  const updatedExperience: Experience = {
-    id,
-    league: formData.get('league') as string,
-    homeTeam: homeTeam === 'custom' ? '' : homeTeam,
-    awayTeam: awayTeam === 'custom' ? '' : awayTeam,
-    customHomeTeam: homeTeam === 'custom' ? formData.get('customHomeTeam') as string : undefined,
-    customAwayTeam: awayTeam === 'custom' ? formData.get('customAwayTeam') as string : undefined,
-    date: formData.get('date') as string,
-    venue: formData.get('venue') as string,
-    gameDetails: formData.get('gameDetails') as string,
-    createdAt: new Date()
-  };
-
-  const index = experiences.findIndex(exp => exp.id === id);
-  if (index !== -1) {
-    experiences[index] = updatedExperience;
-  }
-
-  redirect('/catalog');
-}
-
-export async function deleteExperience(id: string) {
-  experiences = experiences.filter(exp => exp.id !== id);
-  redirect('/catalog');
+  // This runs on the server; localStorage is client-only.
+  // Keep as a no-op log until you wire a database.
+  console.log('Experience saved (server log):', experience);
 }
 
 export async function getExperiences(): Promise<Experience[]> {
-  return experiences;
+  // Server-side placeholder; return empty for now.
+  return [];
+}
+
+export async function deleteExperience(id: string): Promise<void> {
+  // Server-side placeholder; log only for now.
+  console.log('Experience deleted:', id);
 }

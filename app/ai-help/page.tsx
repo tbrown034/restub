@@ -203,7 +203,7 @@ export default function AIHelpPage() {
                 href="/track"
                 className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-xl hover:bg-white hover:text-blue-600 transition-colors"
               >
-                Try Manual Entry
+                Try Manual + AI Assist
               </Link>
             </div>
           </div>
