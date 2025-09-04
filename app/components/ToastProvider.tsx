@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import Icon from './Icon';
+import Icon, { type IconName } from './Icon';
 
 interface Toast {
   id: string;
@@ -93,7 +93,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             onClick={() => removeToast(toast.id)}
           >
             <div className="flex items-center gap-3">
-              <Icon name={getIcon(toast.type) as any} className="flex-shrink-0" size="md" />
+              <Icon name={getIcon(toast.type) as IconName} className="flex-shrink-0" size="md" />
               <p className="font-medium text-sm">{toast.message}</p>
               <button 
                 onClick={() => removeToast(toast.id)}

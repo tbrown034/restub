@@ -49,7 +49,7 @@ export default function ProfilePage() {
     
     // Fix duplicate IDs: track seen IDs and generate new ones for duplicates
     const seenIds = new Set<string>();
-    const fixedGames = games.map((game: any) => {
+    const fixedGames = games.map((game: SavedGame) => {
       let gameId = game.id || crypto.randomUUID();
       
       // If we've seen this ID before, generate a new unique one
@@ -62,7 +62,7 @@ export default function ProfilePage() {
     });
     
     // Save the fixed games back to localStorage if we had to fix any IDs
-    if (games.some((g: any, i: number) => g.id !== fixedGames[i].id)) {
+    if (games.some((g: SavedGame, i: number) => g.id !== fixedGames[i].id)) {
       localStorage.setItem('restub_games', JSON.stringify(fixedGames));
       console.log('Fixed duplicate game IDs in localStorage');
     }

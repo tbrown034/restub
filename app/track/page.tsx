@@ -4,10 +4,7 @@ import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Icon from "../components/Icon";
-import { useState } from "react";
-
 export default function TrackPage() {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
@@ -28,18 +25,14 @@ export default function TrackPage() {
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              We've made it easy to log your stadium memories. Pick the method that works best for you.
+              We&apos;ve made it easy to log your stadium memories. Pick the method that works best for you.
             </p>
           </div>
 
           {/* Three Options Grid */}
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-20">
             {/* AI Assist Option */}
-            <div 
-              className="group relative"
-              onMouseEnter={() => setHoveredCard(1)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <div className="group relative">
               <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600 overflow-hidden">
                 {/* Recommended Badge */}
                 <div className="absolute top-4 right-4 z-10">
@@ -94,11 +87,7 @@ export default function TrackPage() {
             </div>
 
             {/* Upload Ticket Option */}
-            <div 
-              className="group relative"
-              onMouseEnter={() => setHoveredCard(2)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <div className="group relative">
               <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 overflow-hidden">
                 <div className="p-8 pb-32">
                   {/* Icon */}
@@ -149,11 +138,7 @@ export default function TrackPage() {
             </div>
 
             {/* Email Connect Option */}
-            <div 
-              className="group relative"
-              onMouseEnter={() => setHoveredCard(3)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
+            <div className="group relative">
               <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 overflow-hidden">
                 <div className="p-8 pb-32">
                   {/* Icon */}

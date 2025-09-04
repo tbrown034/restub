@@ -20,8 +20,8 @@ const AssistPage = () => {
           
           // Fix duplicate IDs: track seen IDs and generate new ones for duplicates
           const seenIds = new Set<string>();
-          const fixedGames = games.map((game: any, index: number) => {
-            let gameId = game.id || crypto.randomUUID();
+          const fixedGames = games.map((game: Record<string, unknown>) => {
+            let gameId = (game.id as string) || crypto.randomUUID();
             
             // If we've seen this ID before, generate a new unique one
             if (seenIds.has(gameId)) {
@@ -33,7 +33,7 @@ const AssistPage = () => {
           });
           
           // Save the fixed games back to localStorage if we had to fix any IDs
-          if (games.some((g: any, i: number) => g.id !== fixedGames[i].id)) {
+          if (games.some((g: Record<string, unknown>, i: number) => (g.id as string) !== fixedGames[i].id)) {
             localStorage.setItem('restub_games', JSON.stringify(fixedGames));
             console.log('Fixed duplicate game IDs in localStorage');
           }
