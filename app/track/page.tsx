@@ -1,186 +1,243 @@
+"use client";
+
 import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Icon from "../components/Icon";
+import { useState } from "react";
 
 export default function TrackPage() {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <Header />
-      <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <main className="flex-1 py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-800 dark:text-slate-100 mb-8">
-              Start Logging Your Games
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-orange-100 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
+              <Icon name="sparkles" className="text-orange-600 dark:text-orange-400" size="sm" />
+              <span className="text-sm font-medium text-orange-700 dark:text-orange-300">Choose Your Method</span>
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4">
+              How would you like to
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-500 dark:from-orange-500 dark:to-orange-400">
+                add your games?
+              </span>
             </h1>
-            <p className="text-2xl text-slate-600 dark:text-slate-300 max-w-4xl mx-auto leading-relaxed">
-              Choose your flow: Manual + AI Assist, Upload Ticket, or connect your email (coming soon).
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              We've made it easy to log your stadium memories. Pick the method that works best for you.
             </p>
           </div>
 
-          {/* Tracking Options */}
-          <div className="grid md:grid-cols-3 gap-12 mb-20">
-            {/* Manual + AI Assist */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 hover:border-orange-400 transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden">
-              <div className="p-10">
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-3">Manual + AI Assist</h3>
-                  <p className="text-lg text-slate-600 dark:text-slate-300">You enter details, we match the game</p>
+          {/* Three Options Grid */}
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-20">
+            {/* AI Assist Option */}
+            <div 
+              className="group relative"
+              onMouseEnter={() => setHoveredCard(1)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600 overflow-hidden">
+                {/* Recommended Badge */}
+                <div className="absolute top-4 right-4 z-10">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold">
+                    <Icon name="rocket" size="xs" />
+                    RECOMMENDED
+                  </span>
                 </div>
                 
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-orange-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Add what you remember
-                  </li>
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-orange-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    AI searches and suggests exact matches
-                  </li>
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-orange-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Perfect when you don’t have a ticket handy
-                  </li>
-                </ul>
-
-                <Link
-                  href="/catalog"
-                  className="block w-full bg-orange-600 text-white text-center font-semibold py-4 px-8 rounded-xl hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 text-lg"
-                >
-                  Start Manual + AI Assist
-                </Link>
+                <div className="p-8 pb-32">
+                  {/* Icon */}
+                  <div className="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Icon name="sparkles" className="text-white" size="lg" />
+                  </div>
+                  
+                  {/* Content */}
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    AI Assist
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    Tell us what you remember and our AI will find the exact game
+                  </p>
+                  
+                  {/* Features */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Works with partial memories</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Finds scores & stats automatically</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">No ticket needed</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Action Button */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent">
+                  <Link
+                    href="/assist"
+                    className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  >
+                    <Icon name="sparkles" size="sm" />
+                    Start with AI
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* Upload Ticket */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden">
-              <div className="p-10">
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+            {/* Upload Ticket Option */}
+            <div 
+              className="group relative"
+              onMouseEnter={() => setHoveredCard(2)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 overflow-hidden">
+                <div className="p-8 pb-32">
+                  {/* Icon */}
+                  <div className="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                   </div>
-                  <h3 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-3">Upload Ticket</h3>
-                  <p className="text-lg text-slate-600 dark:text-slate-300">Upload your physical or digital ticket and we’ll add the game</p>
+                  
+                  {/* Content */}
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    Upload Ticket
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    Snap a photo or upload your ticket stub for instant game detection
+                  </p>
+                  
+                  {/* Features */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Physical or digital tickets</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">OCR text extraction</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Bulk upload multiple tickets</span>
+                    </div>
+                  </div>
                 </div>
                 
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-blue-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                {/* Action Button */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent">
+                  <button
+                    disabled
+                    className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gray-400 dark:bg-gray-600 text-white font-semibold rounded-xl cursor-not-allowed opacity-75"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                    Works with photos, PDFs, and screenshots
-                  </li>
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-blue-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    We extract the details automatically
-                  </li>
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-blue-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Fastest way to add past games
-                  </li>
-                </ul>
-
-                <Link
-                  href="/ticket-upload"
-                  className="relative block w-full bg-blue-600/70 text-white text-center font-semibold py-4 px-8 rounded-xl transition-all duration-200 text-lg"
-                >
-                  Upload Ticket
-                  <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">Coming Soon</span>
-                </Link>
+                    Coming Soon
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Connect Email (Coming Soon) */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden">
-              <div className="p-10">
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-10 h-10 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            {/* Email Connect Option */}
+            <div 
+              className="group relative"
+              onMouseEnter={() => setHoveredCard(3)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              <div className="relative h-full bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 overflow-hidden">
+                <div className="p-8 pb-32">
+                  {/* Icon */}
+                  <div className="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-3">Connect Your Email</h3>
-                  <p className="text-lg text-slate-600 dark:text-slate-300">Search your inbox for tickets (coming soon)</p>
+                  
+                  {/* Content */}
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    Connect Email
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    Auto-import games from your email ticket confirmations
+                  </p>
+                  
+                  {/* Features */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Gmail, Outlook, Yahoo support</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Secure OAuth connection</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Icon name="check" className="text-green-500 mt-0.5 flex-shrink-0" size="sm" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Auto-sync new tickets</span>
+                    </div>
+                  </div>
                 </div>
-
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-slate-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                
+                {/* Action Button */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent">
+                  <button
+                    disabled
+                    className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gray-400 dark:bg-gray-600 text-white font-semibold rounded-xl cursor-not-allowed opacity-75"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                    Works with major providers
-                  </li>
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-slate-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Secure, read-only access
-                  </li>
-                  <li className="flex items-center text-slate-600 dark:text-slate-300 text-lg">
-                    <svg className="w-6 h-6 text-slate-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Automatically finds your game confirmations
-                  </li>
-                </ul>
-
-                <button
-                  disabled
-                  className="block w-full bg-slate-400/60 text-white text-center font-semibold py-4 px-8 rounded-xl cursor-not-allowed text-lg"
-                >
-                  Coming Soon
-                </button>
+                    Coming Soon
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-12">
-            <h3 className="text-4xl font-bold text-slate-800 dark:text-slate-100 mb-12 text-center">Why Track Your Games?</h3>
-            <div className="grid sm:grid-cols-3 gap-10">
+          {/* Info Section */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 lg:p-12">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Why log your games?
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Every game tells a story. Start building your personal sports history today.
+              </p>
+            </div>
+            
+            <div className="grid sm:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
+                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                  <Icon name="trophy" className="text-orange-600 dark:text-orange-400" size="md" />
                 </div>
-                <h4 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-3">Build Your History</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Create a permanent record of every game you&apos;ve attended</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Track Milestones</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">First games, championships, historic moments</p>
               </div>
+              
               <div className="text-center">
-                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
+                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <Icon name="stadium" className="text-blue-600 dark:text-blue-400" size="md" />
                 </div>
-                <h4 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-3">Preserve Memories</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Never forget those incredible moments and experiences</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Stadium Collection</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Build your map of visited venues</p>
               </div>
+              
               <div className="text-center">
-                <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                  </svg>
+                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                  <Icon name="sparkles" className="text-purple-600 dark:text-purple-400" size="md" />
                 </div>
-                <h4 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-3">Share With Friends</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Show off your sports journey and connect with fellow fans</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Share Memories</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Relive games with friends and family</p>
               </div>
             </div>
           </div>

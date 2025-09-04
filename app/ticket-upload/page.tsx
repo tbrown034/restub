@@ -30,7 +30,7 @@ export default function TicketUploadPage() {
                 <button disabled className="bg-blue-600/70 text-white font-semibold py-3 px-6 rounded-xl cursor-not-allowed">
                   Choose File (Coming Soon)
                 </button>
-                <Link href="/catalog" className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 font-semibold py-3 px-6 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800">
+                <Link href="/assist" className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 font-semibold py-3 px-6 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800">
                   Try Manual + AI Assist
                 </Link>
               </div>

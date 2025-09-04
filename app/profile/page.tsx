@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Icon from '../components/Icon';
 import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -45,7 +46,28 @@ export default function ProfilePage() {
   useEffect(() => {
     // Load saved games from localStorage
     const games = JSON.parse(localStorage.getItem('restub_games') || '[]');
-    setSavedGames(games);
+    
+    // Fix duplicate IDs: track seen IDs and generate new ones for duplicates
+    const seenIds = new Set<string>();
+    const fixedGames = games.map((game: any) => {
+      let gameId = game.id || crypto.randomUUID();
+      
+      // If we've seen this ID before, generate a new unique one
+      if (seenIds.has(gameId)) {
+        gameId = crypto.randomUUID();
+      }
+      seenIds.add(gameId);
+      
+      return { ...game, id: gameId };
+    });
+    
+    // Save the fixed games back to localStorage if we had to fix any IDs
+    if (games.some((g: any, i: number) => g.id !== fixedGames[i].id)) {
+      localStorage.setItem('restub_games', JSON.stringify(fixedGames));
+      console.log('Fixed duplicate game IDs in localStorage');
+    }
+    
+    setSavedGames(fixedGames);
 
     // Load game lists from localStorage
     const lists = JSON.parse(localStorage.getItem('restub_lists') || '[]');
@@ -232,7 +254,7 @@ export default function ProfilePage() {
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-4 mb-8">
             <Link 
-              href="/catalog"
+              href="/assist"
               className="bg-orange-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-orange-700 transition-colors inline-flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -285,7 +307,7 @@ export default function ProfilePage() {
                     <h3 className="text-lg font-semibold text-slate-700 mb-2">No Games Yet</h3>
                     <p className="text-slate-500 mb-4">Start by logging your first game experience!</p>
                     <Link 
-                      href="/catalog"
+                      href="/assist"
                       className="bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors inline-block"
                     >
                       Log Your First Game
@@ -313,7 +335,14 @@ export default function ProfilePage() {
                                     : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
                                 }`}
                               >
-                                {game.attended ? '✓ Attended' : 'Not Attended'}
+                                {game.attended ? (
+                                  <span className="flex items-center gap-1">
+                                    <Icon name="check" size="xs" />
+                                    <span>Attended</span>
+                                  </span>
+                                ) : (
+                                  'Not Attended'
+                                )}
                               </button>
                               <h3 className="font-bold text-slate-800 dark:text-slate-100">
                                 {game.awayTeam} @ {game.homeTeam}

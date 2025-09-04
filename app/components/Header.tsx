@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
+import Icon from "./Icon";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -41,7 +42,7 @@ const Header = () => {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/catalog", label: "Log Games" },
+    { href: "/assist", label: "Log Games" },
     { href: "/profile", label: "My Profile" },
     { href: "/about", label: "About" },
   ];
@@ -111,7 +112,7 @@ const Header = () => {
                 <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">Soon</span>
               </button>
               <Link
-                href="/catalog"
+                href="/assist"
                 className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
               >
                 Get Started
@@ -199,14 +200,14 @@ const Header = () => {
                   href="/track"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-orange-50 dark:hover:bg-orange-500/10 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                 >
-                  <span className="text-lg w-6 text-center">📍</span>
+                  <Icon name="pin" className="text-orange-500" size="sm" />
                   <span>Track Game</span>
                 </Link>
                 <Link
-                  href="/catalog"
+                  href="/assist"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-orange-50 dark:hover:bg-orange-500/10 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                 >
-                  <span className="text-lg w-6 text-center">📝</span>
+                  <Icon name="document" className="text-blue-500" size="sm" />
                   <span>Add Experience</span>
                 </Link>
               </div>
@@ -220,7 +221,7 @@ const Header = () => {
                   Sign In
                 </Link>
                 <Link
-                  href="/catalog"
+                  href="/assist"
                   className="block text-center bg-orange-600 hover:bg-orange-700 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
                 >
                   Get Started

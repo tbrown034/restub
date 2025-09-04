@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import Icon from './Icon';
 
 interface Toast {
   id: string;
@@ -62,15 +63,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const getIcon = (type: Toast['type']) => {
     switch (type) {
       case 'success':
-        return '🎉';
+        return 'celebration';
       case 'error':
-        return '😅';
+        return 'error';
       case 'warning':
-        return '⚠️';
+        return 'warning';
       case 'fun':
-        return '🎮';
+        return 'gamepad';
       default:
-        return 'ℹ️';
+        return 'lightbulb';
     }
   };
 
@@ -92,7 +93,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             onClick={() => removeToast(toast.id)}
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">{getIcon(toast.type)}</span>
+              <Icon name={getIcon(toast.type) as any} className="flex-shrink-0" size="md" />
               <p className="font-medium text-sm">{toast.message}</p>
               <button 
                 onClick={() => removeToast(toast.id)}

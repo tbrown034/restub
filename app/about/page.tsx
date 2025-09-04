@@ -238,7 +238,7 @@ export default function AboutPage() {
                 View on GitHub
               </a>
               <Link 
-                href="/catalog"
+                href="/assist"
                 className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-xl hover:bg-white/10 transition-colors"
               >
                 Start Using Restub

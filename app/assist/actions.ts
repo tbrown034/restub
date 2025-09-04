@@ -54,32 +54,30 @@ function buildSearchQuery(formData: FormData): string {
   const dateType = formData.get('dateType')?.toString();
 
   if (dateType === 'exact') {
-    const month = formData.get('month')?.toString();
-    const day = formData.get('day')?.toString();
-    const year = formData.get('exactYear')?.toString();
-    if (year) {
-      if (month && day) dateInfo = `on ${month}/${day}/${year}`;
-      else if (month) dateInfo = `in ${month}/${year}`;
-      else dateInfo = `in ${year}`;
+    // Check for the exactDate input field first
+    const exactDate = formData.get('exactDate')?.toString();
+    if (exactDate) {
+      // Convert YYYY-MM-DD to readable format
+      const date = new Date(exactDate);
+      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+      dateInfo = `on ${date.toLocaleDateString('en-US', options)}`;
     }
-  } else if (dateType === 'approximate') {
-    const timeframe = formData.get('approxTimeframe')?.toString();
-    const year = formData.get('approxYear')?.toString();
-    if (timeframe && year) dateInfo = `during ${timeframe} ${year}`;
+  } else if (dateType === 'month') {
+    const month = formData.get('month')?.toString();
+    const year = formData.get('year')?.toString();
+    if (month && year) {
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                         'July', 'August', 'September', 'October', 'November', 'December'];
+      const monthName = monthNames[parseInt(month) - 1];
+      dateInfo = `in ${monthName} ${year}`;
+    }
+  } else if (dateType === 'year') {
+    const year = formData.get('yearOnly')?.toString();
+    if (year) dateInfo = `in ${year}`;
   } else if (dateType === 'range') {
     const fromYear = formData.get('fromYear')?.toString();
     const toYear = formData.get('toYear')?.toString();
     if (fromYear && toYear) dateInfo = `between ${fromYear} and ${toYear}`;
-  } else if (dateType === 'context') {
-    const dayOfWeek = formData.get('dayOfWeek')?.toString();
-    const timeOfDay = formData.get('timeOfDay')?.toString();
-    const startYear = formData.get('contextYearStart')?.toString();
-    const endYear = formData.get('contextYearEnd')?.toString();
-    const contextParts: string[] = [];
-    if (dayOfWeek) contextParts.push(`on a ${dayOfWeek}`);
-    if (timeOfDay) contextParts.push(`${timeOfDay}`);
-    if (startYear && endYear) contextParts.push(`between ${startYear}-${endYear}`);
-    if (contextParts.length > 0) dateInfo = contextParts.join(', ');
   }
 
   let query = `Find ${league.toUpperCase()} games`;
