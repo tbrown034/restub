@@ -99,3 +99,17 @@ html {
 .animate-spin-slow {
   animation: spin 3s linear infinite;
 }
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+}

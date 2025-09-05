@@ -11,6 +11,8 @@ interface SavedGame {
   league: string;
   homeTeam: string;
   awayTeam: string;
+  customHomeTeam?: string;
+  customAwayTeam?: string;
   date: string;
   venue: string;
   score?: string;
@@ -19,29 +21,62 @@ interface SavedGame {
   sourceUrl?: string;
   sourceName?: string;
   rating?: number;
-  attended?: boolean;
   whoWith?: string;
   personalMemories?: string;
   savedAt: string;
 }
 
-interface GameList {
-  id: string;
-  name: string;
-  description?: string;
-  gameIds: string[];
-  createdAt: string;
-  isPublished: boolean;
-}
+
+const getLeagueColors = (league: string) => {
+  const colors: Record<string, { bg: string; text: string; border: string; ring: string }> = {
+    nfl: { 
+      bg: 'from-blue-500 to-blue-600', 
+      text: 'text-blue-600 dark:text-blue-400',
+      border: 'border-blue-400/60 dark:border-blue-500/60',
+      ring: 'hover:ring-blue-500/30'
+    },
+    nba: { 
+      bg: 'from-orange-500 to-orange-600', 
+      text: 'text-orange-600 dark:text-orange-400',
+      border: 'border-orange-400/60 dark:border-orange-500/60',
+      ring: 'hover:ring-orange-500/30'
+    },
+    mlb: { 
+      bg: 'from-green-500 to-green-600', 
+      text: 'text-green-600 dark:text-green-400',
+      border: 'border-green-400/60 dark:border-green-500/60',
+      ring: 'hover:ring-green-500/30'
+    },
+    nhl: { 
+      bg: 'from-purple-500 to-purple-600', 
+      text: 'text-purple-600 dark:text-purple-400',
+      border: 'border-purple-400/60 dark:border-purple-500/60',
+      ring: 'hover:ring-purple-500/30'
+    },
+    default: { 
+      bg: 'from-gray-500 to-gray-600', 
+      text: 'text-gray-600 dark:text-gray-400',
+      border: 'border-gray-400/60 dark:border-gray-500/60',
+      ring: 'hover:ring-gray-500/30'
+    }
+  };
+  return colors[league.toLowerCase()] || colors.default;
+};
+
+const formatScore = (score: string | undefined, awayTeam: string, homeTeam: string) => {
+  if (!score) return null;
+  // Only add team names if we have them
+  if (awayTeam && homeTeam) {
+    return score.replace(/(\d+)\s*-\s*(\d+)/, `${awayTeam} $1, ${homeTeam} $2`);
+  }
+  // Otherwise just return the score as-is
+  return score;
+};
+
 
 export default function ProfilePage() {
   const [savedGames, setSavedGames] = useState<SavedGame[]>([]);
-  const [gameLists, setGameLists] = useState<GameList[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Mock login state
-  const [selectedGames, setSelectedGames] = useState<Set<string>>(new Set());
-  const [showCreateList, setShowCreateList] = useState(false);
-  const [newListName, setNewListName] = useState('');
-  const [newListDescription, setNewListDescription] = useState('');
 
   useEffect(() => {
     // Load saved games from localStorage
@@ -68,10 +103,6 @@ export default function ProfilePage() {
     }
     
     setSavedGames(fixedGames);
-
-    // Load game lists from localStorage
-    const lists = JSON.parse(localStorage.getItem('restub_lists') || '[]');
-    setGameLists(lists);
   }, []);
 
   const handleLogin = () => {
@@ -81,73 +112,6 @@ export default function ProfilePage() {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setSelectedGames(new Set());
-  };
-
-  const toggleGameSelection = (gameId: string) => {
-    const newSelected = new Set(selectedGames);
-    if (newSelected.has(gameId)) {
-      newSelected.delete(gameId);
-    } else {
-      newSelected.add(gameId);
-    }
-    setSelectedGames(newSelected);
-  };
-
-  const createNewList = () => {
-    if (!newListName.trim()) return;
-
-    const newList: GameList = {
-      id: `list-${Date.now()}`,
-      name: newListName.trim(),
-      description: newListDescription.trim() || undefined,
-      gameIds: Array.from(selectedGames),
-      createdAt: new Date().toISOString(),
-      isPublished: false
-    };
-
-    const updatedLists = [newList, ...gameLists];
-    setGameLists(updatedLists);
-    localStorage.setItem('restub_lists', JSON.stringify(updatedLists));
-
-    // Reset form
-    setNewListName('');
-    setNewListDescription('');
-    setSelectedGames(new Set());
-    setShowCreateList(false);
-  };
-
-
-  const publishList = (listId: string) => {
-    const updatedLists = gameLists.map(list => 
-      list.id === listId ? { ...list, isPublished: true } : list
-    );
-    setGameLists(updatedLists);
-    localStorage.setItem('restub_lists', JSON.stringify(updatedLists));
-  };
-
-  const moveGameInList = (listId: string, gameId: string, direction: 'up' | 'down') => {
-    const updatedLists = gameLists.map(list => {
-      if (list.id === listId) {
-        const gameIds = [...list.gameIds];
-        const currentIndex = gameIds.indexOf(gameId);
-        const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-        
-        if (newIndex >= 0 && newIndex < gameIds.length) {
-          [gameIds[currentIndex], gameIds[newIndex]] = [gameIds[newIndex], gameIds[currentIndex]];
-        }
-        
-        return { ...list, gameIds };
-      }
-      return list;
-    });
-    
-    setGameLists(updatedLists);
-    localStorage.setItem('restub_lists', JSON.stringify(updatedLists));
-  };
-
-  const getGameById = (gameId: string) => {
-    return savedGames.find(game => game.id === gameId);
   };
 
   const updateGameRating = (gameId: string, rating: number) => {
@@ -158,12 +122,28 @@ export default function ProfilePage() {
     localStorage.setItem('restub_games', JSON.stringify(updatedGames));
   };
 
-  const toggleGameAttendance = (gameId: string) => {
-    const updatedGames = savedGames.map(game => 
-      game.id === gameId ? { ...game, attended: !game.attended } : game
-    );
+  const deleteGame = (gameId: string) => {
+    if (!confirm('Are you sure you want to delete this game?')) {
+      return;
+    }
+    
+    const updatedGames = savedGames.filter(game => game.id !== gameId);
     setSavedGames(updatedGames);
     localStorage.setItem('restub_games', JSON.stringify(updatedGames));
+  };
+
+  const moveGame = (index: number, direction: 'up' | 'down') => {
+    const newGames = [...savedGames];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // Check bounds
+    if (targetIndex < 0 || targetIndex >= newGames.length) return;
+    
+    // Swap items
+    [newGames[index], newGames[targetIndex]] = [newGames[targetIndex], newGames[index]];
+    
+    setSavedGames(newGames);
+    localStorage.setItem('restub_games', JSON.stringify(newGames));
   };
 
   if (!isLoggedIn) {
@@ -198,12 +178,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Profile Header */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 mb-8 border border-slate-200 dark:border-slate-700">
+          <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl p-8 mb-8 border border-gray-200/50 dark:border-gray-700/50">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
@@ -229,73 +209,47 @@ export default function ProfilePage() {
 
           {/* Stats Overview */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-2">{savedGames.length}</div>
-              <div className="text-slate-600 dark:text-slate-400">Games Logged</div>
+            <div className="group bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:-translate-y-1">
+              <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600 mb-2">{savedGames.length}</div>
+              <div className="text-gray-600 dark:text-gray-400 text-sm font-medium">Games Tracked</div>
             </div>
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">{savedGames.filter(game => game.attended).length}</div>
-              <div className="text-slate-600 dark:text-slate-400">Games Attended</div>
-            </div>
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
-                {gameLists.filter(list => list.isPublished).length}
+            <div className="group bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:-translate-y-1">
+              <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-600 mb-2">
+                {savedGames.filter(game => game.league === 'nfl').length}
               </div>
-              <div className="text-slate-600 dark:text-slate-400">Published Lists</div>
+              <div className="text-gray-600 dark:text-gray-400 text-sm font-medium">NFL Games</div>
             </div>
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+            <div className="group bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:-translate-y-1">
+              <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-600 mb-2">
+                {savedGames.filter(game => game.league === 'nba').length}
+              </div>
+              <div className="text-gray-600 dark:text-gray-400 text-sm font-medium">NBA Games</div>
+            </div>
+            <div className="group bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:-translate-y-1">
+              <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-600 mb-2">
                 {savedGames.filter(game => game.rating && game.rating >= 4).length}
               </div>
-              <div className="text-slate-600 dark:text-slate-400">4+ Star Games</div>
+              <div className="text-gray-600 dark:text-gray-400 text-sm font-medium">Top Rated</div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-4 mb-8">
+          {/* Action Button */}
+          <div className="flex justify-center mb-8">
             <Link 
               href="/assist"
-              className="bg-orange-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-orange-700 transition-colors inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 inline-flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
               Log New Game
             </Link>
-            
-            {selectedGames.size === 0 ? (
-              // Show "Create New List" when no games selected
-              <button 
-                onClick={() => setShowCreateList(true)}
-                className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                Create New List
-              </button>
-            ) : (
-              // Show both options when games are selected
-              <>
-                <button 
-                  onClick={() => setShowCreateList(true)}
-                  className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                  Add to New List ({selectedGames.size})
-                </button>
-                
-              </>
-            )}
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Saved Games */}
-            <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Your Saved Games</h2>
+          {/* Saved Games */}
+          <div className="max-w-5xl mx-auto">
+              <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Your Saved Games</h2>
                 
                 {savedGames.length === 0 ? (
                   <div className="text-center py-12">
@@ -304,8 +258,8 @@ export default function ProfilePage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-700 mb-2">No Games Yet</h3>
-                    <p className="text-slate-500 mb-4">Start by logging your first game experience!</p>
+                    <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No Games Yet</h3>
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">Start by logging your first game experience!</p>
                     <Link 
                       href="/assist"
                       className="bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors inline-block"
@@ -315,60 +269,122 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {savedGames.map((game) => (
-                      <div 
-                        key={game.id}
-                        className={`border-2 rounded-xl p-4 transition-all ${
-                          selectedGames.has(game.id) 
-                            ? 'border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                            : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 dark:bg-slate-800/50'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <button
-                                onClick={() => toggleGameAttendance(game.id)}
-                                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
-                                  game.attended 
-                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
-                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
-                                }`}
+                    {savedGames.map((game, index) => {
+                      const leagueColors = getLeagueColors(game.league);
+                      // Use actual team names from the game data
+                      const awayTeam = game.awayTeam || '';
+                      const homeTeam = game.homeTeam || '';
+                      const formattedScore = formatScore(game.score, awayTeam, homeTeam);
+                      
+                      return (
+                        <div 
+                          key={game.id}
+                          className={`
+                            group relative overflow-hidden rounded-2xl
+                            bg-gradient-to-br from-white/95 to-white/85 dark:from-gray-800/80 dark:to-gray-900/60
+                            backdrop-blur-xl backdrop-saturate-150
+                            border-2 ${leagueColors.border} 
+                            shadow-lg hover:shadow-xl
+                            transform transition-all duration-300 ease-out
+                            hover:-translate-y-1
+                          `}
+                        >
+                          {/* League Badge */}
+                          <div className="absolute top-4 left-4">
+                            <div className={`
+                              px-3 py-1 rounded-full 
+                              bg-gradient-to-r ${leagueColors.bg}
+                              text-white text-xs font-bold uppercase
+                              shadow-md
+                            `}>
+                              {game.league}
+                            </div>
+                          </div>
+
+                          {/* Action Buttons - Top Right */}
+                          <div className="absolute top-4 right-4 flex items-center gap-2">
+                            {/* Reorder Arrows */}
+                            {index > 0 && (
+                              <button 
+                                onClick={() => moveGame(index, 'up')}
+                                className="p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 shadow-md"
+                                title="Move Up"
                               >
-                                {game.attended ? (
-                                  <span className="flex items-center gap-1">
-                                    <Icon name="check" size="xs" />
-                                    <span>Attended</span>
-                                  </span>
-                                ) : (
-                                  'Not Attended'
-                                )}
+                                <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                </svg>
                               </button>
-                              <h3 className="font-bold text-slate-800 dark:text-slate-100">
-                                {game.awayTeam} @ {game.homeTeam}
-                              </h3>
-                              <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full text-slate-600 dark:text-slate-400 uppercase">
-                                {game.league}
-                              </span>
-                            </div>
-                            
-                            <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-2">
-                              <span>{new Date(game.date).toLocaleDateString()}</span>
-                              <span>{game.venue}</span>
-                              {game.score && <span className="font-semibold">{game.score}</span>}
-                            </div>
-                            
-                            {game.description && (
-                              <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 rounded-lg p-2 mb-2">{game.description}</p>
+                            )}
+                            {index < savedGames.length - 1 && (
+                              <button 
+                                onClick={() => moveGame(index, 'down')}
+                                className="p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 shadow-md"
+                                title="Move Down"
+                              >
+                                <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
                             )}
                             
-                            {game.gameDetails && (
-                              <p className="text-sm text-slate-600 dark:text-slate-400 italic mb-2">&ldquo;{game.gameDetails}&rdquo;</p>
+                            {/* Delete Button */}
+                            <button 
+                              onClick={() => deleteGame(game.id)}
+                              className="p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 hover:bg-red-50 dark:hover:bg-red-900/30 shadow-md"
+                              title="Delete Game"
+                            >
+                              <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+
+                          {/* Main Content */}
+                          <div className="p-6 pt-12">
+                            {/* Teams - only show if we have them */}
+                            {(awayTeam && homeTeam) && (
+                              <div className="mb-3">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                  {awayTeam} @ {homeTeam}
+                                </h3>
+                                {formattedScore && (
+                                  <p className={`text-lg font-semibold mt-1 ${leagueColors.text}`}>
+                                    Final: {formattedScore}
+                                  </p>
+                                )}
+                              </div>
                             )}
+                            
+                            {/* Date & Venue */}
+                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                              <div className="flex items-center gap-1">
+                                <Icon name="calendar" size="sm" />
+                                <span>{new Date(game.date).toLocaleDateString()}</span>
+                              </div>
+                              {game.venue && (
+                                <div className="flex items-center gap-1">
+                                  <Icon name="pin" size="sm" />
+                                  <span>{game.venue}</span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Show EITHER AI description OR user's gameDetails, not both */}
+                            {game.description ? (
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                                {game.description}
+                              </p>
+                            ) : game.gameDetails ? (
+                              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 mb-3">
+                                <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                                  Your notes: {game.gameDetails}
+                                </p>
+                              </div>
+                            ) : null}
                             
                             {/* Interactive Star Rating */}
-                            <div className="flex items-center gap-2 mt-2">
-                              <span className="text-sm text-slate-600 dark:text-slate-400">Rating:</span>
+                            <div className="flex items-center gap-2 mb-3">
+                              <span className="text-sm text-gray-600 dark:text-gray-400">Rate:</span>
                               <div className="flex items-center gap-1">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                   <button
@@ -382,10 +398,9 @@ export default function ProfilePage() {
                                     <svg
                                       className={`w-5 h-5 transition-colors ${
                                         star <= (game.rating || 0) 
-                                          ? 'text-yellow-400 dark:text-yellow-500' 
-                                          : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-300 dark:group-hover:text-yellow-600'
+                                          ? 'text-yellow-400 fill-current' 
+                                          : 'text-gray-300 dark:text-gray-600 group-hover:text-yellow-300'
                                       }`}
-                                      fill="currentColor"
                                       viewBox="0 0 20 20"
                                     >
                                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -393,213 +408,44 @@ export default function ProfilePage() {
                                   </button>
                                 ))}
                                 {game.rating && (
-                                  <span className="text-sm text-slate-500 dark:text-slate-400 ml-1">
-                                    {game.rating}/5
+                                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">
+                                    ({game.rating}/5)
                                   </span>
                                 )}
                               </div>
                             </div>
                             
-                            {game.whoWith && (
-                              <p className="text-sm text-slate-600 mt-2">With: {game.whoWith}</p>
-                            )}
-                            
+                            {/* Source Link */}
                             {game.sourceUrl && (
                               <a 
                                 href={game.sourceUrl} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 mt-2"
+                                className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
-                                {game.sourceName || 'View Source'}
+                                {game.sourceName || 'View source'}
                               </a>
                             )}
                           </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleGameSelection(game.id);
-                              }}
-                              className="w-6 h-6 rounded border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center transition-colors hover:border-blue-400 dark:hover:border-blue-500"
-                            >
-                              {selectedGames.has(game.id) && (
-                                <div className="w-full h-full bg-blue-600 rounded-sm flex items-center justify-center">
-                                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                </div>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
 
-            {/* Game Lists */}
-            <div>
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-slate-800 mb-6">Your Lists</h2>
-                
-                {gameLists.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                      </svg>
-                    </div>
-                    <h3 className="text-sm font-semibold text-slate-700 mb-1">No Lists Yet</h3>
-                    <p className="text-xs text-slate-500">Select games to create your first list!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {gameLists.map((list) => (
-                      <div key={list.id} className="border border-slate-200 rounded-xl p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3 className="font-bold text-slate-800">{list.name}</h3>
-                            {list.description && (
-                              <p className="text-sm text-slate-600">{list.description}</p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {list.isPublished ? (
-                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">
-                                Published
-                              </span>
-                            ) : (
-                              <button
-                                onClick={() => publishList(list.id)}
-                                className="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors"
-                              >
-                                Publish
-                              </button>
-                            )}
+                          {/* Subtle League Watermark */}
+                          <div className="absolute bottom-0 right-0 opacity-5 dark:opacity-10">
+                            <div className={`text-8xl font-black ${leagueColors.text} select-none blur-sm`}>
+                              {game.league.toUpperCase()}
+                            </div>
                           </div>
                         </div>
-                        
-                        <div className="space-y-2">
-                          {list.gameIds.map((gameId, index) => {
-                            const game = getGameById(gameId);
-                            if (!game) return null;
-                            
-                            return (
-                              <div key={gameId} className="flex items-center justify-between bg-slate-50 rounded-lg p-2">
-                                <div className="flex-1">
-                                  <span className="text-sm font-medium text-slate-800">
-                                    {index + 1}. {game.awayTeam} @ {game.homeTeam}
-                                  </span>
-                                </div>
-                                <div className="flex gap-1">
-                                  <button
-                                    onClick={() => moveGameInList(list.id, gameId, 'up')}
-                                    disabled={index === 0}
-                                    className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                    </svg>
-                                  </button>
-                                  <button
-                                    onClick={() => moveGameInList(list.id, gameId, 'down')}
-                                    disabled={index === list.gameIds.length - 1}
-                                    className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Create List Modal */}
-        {showCreateList && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Create New List</h3>
-              
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    List Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    placeholder="e.g., Favorite Bears Games"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Description (Optional)
-                  </label>
-                  <textarea
-                    value={newListDescription}
-                    onChange={(e) => setNewListDescription(e.target.value)}
-                    placeholder="What makes this list special?"
-                    rows={3}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  />
-                </div>
-                
-                <div className="bg-blue-50 rounded-xl p-3">
-                  <p className="text-sm text-blue-800 font-semibold mb-2">
-                    Games to include ({selectedGames.size}):
-                  </p>
-                  <div className="space-y-1">
-                    {Array.from(selectedGames).map(gameId => {
-                      const game = getGameById(gameId);
-                      return game ? (
-                        <div key={gameId} className="text-sm text-blue-700">
-                          • {game.awayTeam} @ {game.homeTeam}
-                        </div>
-                      ) : null;
+                      );
                     })}
                   </div>
-                </div>
+                )}
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={createNewList}
-                  disabled={!newListName.trim()}
-                  className="flex-1 bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                >
-                  Create List
-                </button>
-                <button
-                  onClick={() => setShowCreateList(false)}
-                  className="flex-1 bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-300 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
           </div>
-        )}
+        </div>
       </main>
       <Footer />
     </div>

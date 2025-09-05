@@ -30,10 +30,13 @@ export interface Experience {
   venue: string;
   score?: string;
   gameDetails?: string;
+  description?: string;
   personalMemories?: string;
   whoWith?: string;
   rating?: number;
   savedAt: string;
+  sourceUrl?: string;
+  sourceName?: string;
 }
 
 /** ---------------------- Query builder (unchanged) ---------------------- */
@@ -108,9 +111,9 @@ Return your response in this exact JSON format:
       "homeTeam": "Team Name",
       "awayTeam": "Team Name",
       "date": "Month DD, YYYY",
-      "venue": "Stadium/Arena Name",
+      "venue": "Stadium/Arena Name, City",
       "score": "Away XX - Home XX",
-      "description": "Brief game summary",
+      "description": "Detailed game summary including key moments, notable players, game significance (playoff/regular season), final result, and any memorable highlights or records broken",
       "confidence": 0.95,
       "sourceUrl": "URL to source",
       "sourceName": "Source name"
@@ -121,14 +124,16 @@ Return your response in this exact JSON format:
 Rules:
 - Use web search to find real, accurate game information
 - Return up to 5 most likely matches, sorted by confidence
-- Include playoff/championship designation if applicable
+- The description field should be 2-3 sentences with rich details about the actual game
+- Include playoff/championship/series information in the description if applicable
+- Include notable player performances in the description
 - If the score is not available, omit the score field
 - Confidence should reflect how well the game matches ALL provided criteria
 - Output ONLY the JSON object, nothing else`;
 
   try {
     // Using the GPT-5 Responses API with web search
-    const response = await openai.responses.create({
+    const response = await (openai as unknown as {responses: {create: (params: object) => Promise<{output_text: string}>}}).responses.create({
       model: 'gpt-5-mini',
       input: `${systemPrompt}\n\n${searchQuery}`,
       reasoning: { effort: 'low' },  // Low effort for web search compatibility

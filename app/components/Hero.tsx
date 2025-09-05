@@ -1,9 +1,8 @@
 import Link from "next/link";
-import FunInteractives from "./FunInteractives";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center py-16 sm:py-20 px-4 sm:px-8 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <section className="relative min-h-screen flex items-center py-16 sm:py-20 px-4 sm:px-8 bg-white dark:bg-gray-900">
       {/* Subtle background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-br from-orange-100 to-orange-50 dark:from-orange-900/10 dark:to-orange-800/5 rounded-full blur-3xl opacity-60"></div>
@@ -43,7 +42,7 @@ const Hero = () => {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 px-4">
           <Link
-            href="/track"
+            href="/add-methods"
             className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +67,7 @@ const Hero = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-2 sm:px-4">
             {/* Log Your Games Ticket */}
             <Link
-              href="/track"
+              href="/add-methods"
               className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 hover:border-orange-400 dark:hover:border-orange-500 transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden transform hover:-translate-y-1"
             >
               <div className="relative">
@@ -91,8 +90,8 @@ const Hero = () => {
                   </p>
                   <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 font-mono">
                     <span>ADMIT ONE</span>
-                    <span className="hidden sm:inline">SECTION: TRACK</span>
-                    <span className="sm:hidden">TRACK</span>
+                    <span className="hidden sm:inline">SECTION: METHODS</span>
+                    <span className="sm:hidden">METHODS</span>
                   </div>
                 </div>
               </div>
@@ -185,7 +184,6 @@ const Hero = () => {
         </div>
       </div>
       
-      <FunInteractives />
     </section>
   );
 };

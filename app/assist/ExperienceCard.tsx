@@ -1,8 +1,35 @@
 'use client';
 
-import { Experience } from './actions';
+/*
+PRESERVED DESIGN - Fuzzy League Watermark Background Effect:
+This design feature creates a subtle, blurred league abbreviation in the background.
+Can be reused in other card components:
 
-const ExperienceCard = ({ experience }: { experience: Experience }) => {
+<div className="absolute bottom-0 right-0 opacity-10 dark:opacity-20">
+  <div className={`text-8xl font-black ${leagueColors.text} select-none blur-sm`}>
+    {experience.league.toUpperCase()}
+  </div>
+</div>
+
+Where leagueColors comes from the getLeagueColors function that maps leagues to their brand colors.
+*/
+
+import { useState } from 'react';
+import { Experience } from './actions';
+import Icon from '../components/Icon';
+
+interface ExperienceCardProps {
+  experience: Experience;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+}
+
+const ExperienceCard = ({ experience, onMoveUp, onMoveDown, canMoveUp, canMoveDown }: ExperienceCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  
   const handleDelete = (id: string) => {
     if (!confirm('Are you sure you want to delete this game?')) {
       return;
@@ -16,165 +43,249 @@ const ExperienceCard = ({ experience }: { experience: Experience }) => {
     // Trigger refresh
     window.dispatchEvent(new Event('restub-game-added'));
   };
+
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Date not specified';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
     });
   };
 
-  const getLeagueColor = (league: string) => {
-    const colors = {
-      nfl: 'bg-blue-600 border-blue-700',
-      nba: 'bg-orange-600 border-orange-700',
-      mlb: 'bg-slate-600 border-slate-700',
-      nhl: 'bg-slate-700 border-slate-800'
+  const getLeagueColors = (league: string) => {
+    const colors: Record<string, { bg: string; text: string; border: string; ring: string }> = {
+      nfl: { 
+        bg: 'from-blue-500 to-blue-600', 
+        text: 'text-blue-600 dark:text-blue-400',
+        border: 'border-blue-400/60 dark:border-blue-500/60',
+        ring: 'hover:ring-blue-500/30'
+      },
+      nba: { 
+        bg: 'from-orange-500 to-orange-600', 
+        text: 'text-orange-600 dark:text-orange-400',
+        border: 'border-orange-400/60 dark:border-orange-500/60',
+        ring: 'hover:ring-orange-500/30'
+      },
+      mlb: { 
+        bg: 'from-green-500 to-green-600', 
+        text: 'text-green-600 dark:text-green-400',
+        border: 'border-green-400/60 dark:border-green-500/60',
+        ring: 'hover:ring-green-500/30'
+      },
+      nhl: { 
+        bg: 'from-purple-500 to-purple-600', 
+        text: 'text-purple-600 dark:text-purple-400',
+        border: 'border-purple-400/60 dark:border-purple-500/60',
+        ring: 'hover:ring-purple-500/30'
+      },
+      default: { 
+        bg: 'from-gray-500 to-gray-600', 
+        text: 'text-gray-600 dark:text-gray-400',
+        border: 'border-gray-400/60 dark:border-gray-500/60',
+        ring: 'hover:ring-gray-500/30'
+      }
     };
-    return colors[league as keyof typeof colors] || colors.nfl;
-  };
-
-  const getLeagueIcon = (league: string) => {
-    return league.toUpperCase();
+    return colors[league.toLowerCase()] || colors.default;
   };
 
   const getDisplayTeamName = (teamName: string, customTeamName?: string) => {
     if (customTeamName) return customTeamName;
-    if (!teamName) return 'Unknown Team';
+    if (!teamName || teamName === 'Unknown Team') return 'Team';
     return teamName;
   };
 
   const getMatchupDisplay = () => {
     const awayTeam = getDisplayTeamName(experience.awayTeam, experience.customAwayTeam);
     const homeTeam = getDisplayTeamName(experience.homeTeam, experience.customHomeTeam);
-    
-    if (awayTeam === 'Unknown Team' && homeTeam === 'Unknown Team') {
-      return 'Game Details Unknown';
-    }
-    
-    return `${awayTeam} @ ${homeTeam}`;
+    return { awayTeam, homeTeam };
   };
 
-  const StarRating = ({ rating = 0 }: { rating?: number }) => {
-    return (
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <svg
-            key={star}
-            className={`w-5 h-5 ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        ))}
-        <span className="text-sm text-slate-600 ml-1">
-          {rating > 0 ? `${rating}/5` : 'Not rated'}
-        </span>
-      </div>
-    );
-  };
+  const { awayTeam, homeTeam } = getMatchupDisplay();
+  const leagueColors = getLeagueColors(experience.league);
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg border-2 border-slate-200 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-orange-300">
-      <div className="flex justify-between items-start mb-4">
-        <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold text-white border-2 ${getLeagueColor(experience.league)} shadow-lg`}>
-          {getLeagueIcon(experience.league)}
-        </div>
-        <div className="flex space-x-2">
-          <button className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 border border-slate-300 hover:border-orange-400 rounded-xl transition-all duration-200">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </button>
-          <button 
-            type="button"
-            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 border border-slate-300 hover:border-red-400 rounded-xl transition-all duration-200"
-            onClick={() => handleDelete(experience.id)}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-      
-      <h3 className="text-xl font-bold text-slate-800 mb-3">{getMatchupDisplay()}</h3>
-      
-      {/* Star Rating */}
-      <div className="mb-4">
-        <StarRating rating={experience.rating} />
-      </div>
-      
-      <div className="space-y-3 text-sm text-slate-600 mb-4">
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-orange-600 border-2 border-orange-700 rounded-full flex items-center justify-center mr-3">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-          {formatDate(experience.date)}
-        </div>
+    <div 
+      className="group relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setShowMenu(false);
+      }}
+    >
+      {/* Modern Glassmorphic Card with Depth */}
+      <div className={`
+        relative overflow-hidden rounded-2xl
+        bg-gradient-to-br from-white/95 to-white/85 dark:from-gray-800/80 dark:to-gray-900/60
+        backdrop-blur-xl backdrop-saturate-150
+        border-2 ${leagueColors.border} 
+        shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]
+        hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.25)] dark:hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]
+        transform transition-all duration-300 ease-out
+        ring-2 ring-transparent ${leagueColors.ring}
+        ${isHovered ? '-translate-y-2 scale-[1.02]' : ''}
+        before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:pointer-events-none
+      `}>
         
-        {experience.venue && (
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-600 border-2 border-blue-700 rounded-full flex items-center justify-center mr-3">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            {experience.venue}
+        {/* League Badge - Top Left Corner */}
+        <div className="absolute top-4 left-4 z-10">
+          <div className={`
+            px-3 py-1 rounded-full 
+            bg-gradient-to-r ${leagueColors.bg}
+            text-white text-xs font-bold uppercase
+            shadow-lg
+          `}>
+            {experience.league}
           </div>
-        )}
+        </div>
 
-        {experience.whoWith && (
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-purple-600 border-2 border-purple-700 rounded-full flex items-center justify-center mr-3">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+        {/* Quick Actions - Top Right */}
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+          {/* Reorder Arrows */}
+          {canMoveUp && (
+            <button 
+              onClick={onMoveUp}
+              className="p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110"
+              title="Move Up"
+            >
+              <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
               </svg>
-            </div>
-            With: {experience.whoWith}
-          </div>
-        )}
-      </div>
-
-      {/* Media Section */}
-      <div className="mb-4">
-        <div className="flex flex-col sm:flex-row gap-2">
-          {/* Photo Upload Placeholder */}
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors text-sm text-slate-600">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Add Photos
-          </button>
+            </button>
+          )}
+          {canMoveDown && (
+            <button 
+              onClick={onMoveDown}
+              className="p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110"
+              title="Move Down"
+            >
+              <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
           
-          {/* Video Upload Placeholder */}
-          <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors text-sm text-slate-600">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          {/* Favorite/Heart Button */}
+          <button className="p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110">
+            <svg className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
-            Add Videos
           </button>
+
+          {/* More Options */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl ring-1 ring-white/20 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 hover:bg-white dark:hover:bg-gray-700"
+            >
+              <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+              </svg>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden z-50 ring-1 ring-black/5">
+                <button 
+                  onClick={() => handleDelete(experience.id)}
+                  className="w-full px-4 py-3 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors flex items-center gap-3"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="p-6 pt-14">
+          {/* Teams - Primary Focus */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                {awayTeam} @ {homeTeam}
+              </h3>
+            </div>
+            {experience.score && (
+              <p className={`text-2xl font-bold ${leagueColors.text}`}>
+                {experience.score}
+              </p>
+            )}
+          </div>
+
+          {/* Date & Venue - Secondary Info */}
+          <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <div className="flex items-center gap-1">
+              <Icon name="calendar" size="sm" />
+              <span>{formatDate(experience.date)}</span>
+            </div>
+            {experience.venue && (
+              <div className="flex items-center gap-1">
+                <Icon name="pin" size="sm" />
+                <span className="truncate">{experience.venue}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Rating Stars */}
+          {experience.rating && (
+            <div className="flex items-center gap-1 mb-4">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <svg
+                  key={star}
+                  className={`w-4 h-4 ${star <= experience.rating! ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+          )}
+
+          {/* Game Description from AI */}
+          {experience.description && (
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700/50">
+              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                {experience.description}
+              </p>
+            </div>
+          )}
+
+          {/* Hover Overlay - Source Link */}
+          {experience.sourceUrl && (
+            <div className={`
+              absolute inset-0 bg-gradient-to-t from-black/60 to-transparent
+              flex items-end justify-center pb-6
+              opacity-0 group-hover:opacity-100
+              transition-opacity duration-300
+              pointer-events-none
+            `}>
+              <a 
+                href={experience.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full text-sm font-semibold text-gray-900 dark:text-white pointer-events-auto hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                {experience.sourceName || 'View Source'}
+              </a>
+            </div>
+          )}
+        </div>
+
+        {/* Subtle League Watermark with Glow */}
+        <div className="absolute bottom-0 right-0 opacity-10 dark:opacity-20">
+          <div className={`text-8xl font-black ${leagueColors.text} select-none blur-sm`}>
+            {experience.league.toUpperCase()}
+          </div>
         </div>
       </div>
-      
-      {experience.gameDetails && (
-        <div className="bg-slate-50 rounded-2xl p-4 border-2 border-slate-200 mb-4">
-          <h4 className="text-sm font-semibold text-slate-700 mb-2">Game Details</h4>
-          <p className="text-sm text-slate-700 leading-relaxed">{experience.gameDetails}</p>
-        </div>
-      )}
-
-      {experience.personalMemories && (
-        <div className="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200">
-          <h4 className="text-sm font-semibold text-blue-800 mb-2">Personal Memories</h4>
-          <p className="text-sm text-blue-700 leading-relaxed">{experience.personalMemories}</p>
-        </div>
-      )}
     </div>
   );
 };

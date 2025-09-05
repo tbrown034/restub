@@ -200,7 +200,7 @@ export default function AIHelpPage() {
                 Upload Email (Coming Soon)
               </button>
               <Link
-                href="/track"
+                href="/add-methods"
                 className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-xl hover:bg-white hover:text-blue-600 transition-colors"
               >
                 Try Manual + AI Assist

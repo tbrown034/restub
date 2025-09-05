@@ -104,6 +104,7 @@ const Header = () => {
             {/* Right Side Actions - Fixed Width */}
             <div className="flex-shrink-0 hidden md:flex items-center gap-3">
               <ThemeToggle />
+              {/* Sign In button - commented out for now
               <button
                 disabled
                 className="relative text-slate-400 dark:text-slate-500 px-3 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
@@ -111,18 +112,20 @@ const Header = () => {
                 Sign In
                 <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">Soon</span>
               </button>
+              */}
+              {/* Add Game button - hidden on medium, shown on large */}
               <Link
                 href="/assist"
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
+                className="hidden lg:block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
               >
-                Get Started
+                Add Game
               </Link>
             </div>
 
             {/* Mobile Menu Button & Theme Toggle */}
-            <div className="flex items-center gap-3 lg:hidden">
+            <div className="flex items-center gap-3 md:hidden">
               <ThemeToggle />
-
+              
               {/* Hamburger Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -197,11 +200,11 @@ const Header = () => {
                   </p>
                 </div>
                 <Link
-                  href="/track"
+                  href="/add-methods"
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-orange-50 dark:hover:bg-orange-500/10 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                 >
                   <Icon name="pin" className="text-orange-500" size="sm" />
-                  <span>Track Game</span>
+                  <span>Add Methods</span>
                 </Link>
                 <Link
                   href="/assist"
@@ -212,19 +215,21 @@ const Header = () => {
                 </Link>
               </div>
 
-              {/* Sign In / Get Started */}
+              {/* Add Game CTA */}
               <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                {/* Sign In link - commented out for now
                 <Link
                   href="/login"
                   className="block text-center text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200"
                 >
                   Sign In
                 </Link>
+                */}
                 <Link
                   href="/assist"
                   className="block text-center bg-orange-600 hover:bg-orange-700 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
                 >
-                  Get Started
+                  Add Game
                 </Link>
               </div>
             </nav>

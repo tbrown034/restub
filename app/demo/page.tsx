@@ -39,7 +39,7 @@ export default function DemoPage() {
                 Get an inside look at how ReStub makes tracking your sports experiences effortless and enjoyable.
               </p>
               <Link
-                href="/track"
+                href="/add-methods"
                 className="inline-flex items-center bg-orange-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-orange-700 transition-colors"
               >
                 Try It Now
@@ -180,7 +180,7 @@ export default function DemoPage() {
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/track"
+                href="/add-methods"
                 className="bg-white text-orange-600 font-semibold py-3 px-8 rounded-xl hover:bg-orange-50 transition-colors"
               >
                 Start Tracking Now
