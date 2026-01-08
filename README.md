@@ -66,3 +66,4 @@ app/
 - Search and filtering capabilities
 - Export functionality
 - Photo attachments
+
