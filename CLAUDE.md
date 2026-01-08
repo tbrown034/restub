@@ -464,3 +464,18 @@ This section tracks major problems tackled and solutions implemented during deve
 1. **Unit Tests**: Test individual components and utilities
 2. **Integration Tests**: Test form flow end-to-end
 3. **E2E Tests**: Test full user journeys with Playwright
+
+---
+
+## Workspace Context
+
+**Project Name**: restub
+**Location**: `~/Desktop/ActiveProjects/restub`
+**GitHub**: github.com/tbrown034/restub
+
+This project is part of Trevor Brown's ActiveProjects workspace:
+- Workspace docs: `~/Desktop/ActiveProjects/_docs/`
+- Project status: See `_docs/status.md` for all project statuses
+- Naming convention: kebab-case
+
+Last updated: 2026-01-08
