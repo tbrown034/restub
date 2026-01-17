@@ -15,11 +15,11 @@ Where leagueColors comes from the getLeagueColors function that maps leagues to 
 */
 
 import { useState } from 'react';
-import { Experience } from './actions';
+import type { SavedGame } from '@/lib/types';
 import Icon from '../components/Icon';
 
 interface ExperienceCardProps {
-  experience: Experience;
+  experience: SavedGame;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
   canMoveUp?: boolean;

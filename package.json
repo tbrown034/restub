@@ -9,9 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
     "@neondatabase/serverless": "^1.0.1",
     "@stackframe/stack": "^2.8.28",
+    "googleapis": "^170.1.0",
     "next": "^15.4.8",
+    "next-auth": "^4.24.13",
     "openai": "^5.16.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"

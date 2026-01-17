@@ -1,11 +1,11 @@
 'use client';
 
-import { searchGame, addExperience } from './actions';
+import { searchGame, saveGame } from './actions';
 import { getAllTeamsForDropdown } from './teams';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Icon from '../components/Icon';
-import type { GameSearchResult } from './actions';
+import type { GameSearchResult, SavedGame } from '@/lib/types';
 
 type Step = 'form' | 'review' | 'results';
 
@@ -114,17 +114,28 @@ const AddExperienceForm = () => {
 
   const handleGameSearch = async () => {
     if (!formData) return;
-    
+
     setIsSearching(true);
     setSearchError(null);
     setLoadingProgress(0);
-    
+
     try {
-      const results = await searchGame(formData);
+      const response = await searchGame(formData);
       setLoadingProgress(100);
       // Small delay to show 100% completion
       await new Promise(resolve => setTimeout(resolve, 300));
-      setSearchResults(results);
+
+      if (!response.success) {
+        setSearchError(response.error || 'Failed to search for games. Please try again.');
+        return;
+      }
+
+      if (!response.data || response.data.length === 0) {
+        setSearchError('No games found matching your criteria. Try adjusting your search details.');
+        return;
+      }
+
+      setSearchResults(response.data);
       setCurrentStep('results');
       // Scroll to top when showing results
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -156,47 +167,53 @@ const AddExperienceForm = () => {
     return { label: 'Unlikely', color: 'text-gray-600 dark:text-gray-400' };
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   const handleAddToMyList = async () => {
     if (!formData || !selectedGameId || !searchResults) return;
-    
+
     const selectedGame = searchResults.find(game => game.id === selectedGameId);
     if (!selectedGame) return;
-    
-    // Add selected game info to form data
-    formData.set('selectedGameId', selectedGame.id);
-    formData.set('finalDate', selectedGame.date);
-    formData.set('finalVenue', selectedGame.venue);
-    formData.set('finalScore', selectedGame.score || '');
-    
-    // Save to localStorage temporarily
-    const savedGames = JSON.parse(localStorage.getItem('restub_games') || '[]');
-    const gameToSave = {
-      id: crypto.randomUUID(), // Always generate unique ID for each saved game
-      league: formData.get('league'),
-      // Use the actual teams from the selected game (from API), fallback to form if needed
-      homeTeam: selectedGame.homeTeam || (formData.get('homeTeam') === 'custom' ? formData.get('customHomeTeam') : formData.get('homeTeam')),
-      awayTeam: selectedGame.awayTeam || (formData.get('awayTeam') === 'custom' ? formData.get('customAwayTeam') : formData.get('awayTeam')),
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    // Build the game object to save
+    const gameToSave: SavedGame = {
+      id: crypto.randomUUID(),
+      league: formData.get('league')?.toString() || '',
+      homeTeam: selectedGame.homeTeam || (formData.get('homeTeam') === 'custom' ? formData.get('customHomeTeam')?.toString() : formData.get('homeTeam')?.toString()) || '',
+      awayTeam: selectedGame.awayTeam || (formData.get('awayTeam') === 'custom' ? formData.get('customAwayTeam')?.toString() : formData.get('awayTeam')?.toString()) || '',
       date: selectedGame.date,
       venue: selectedGame.venue,
       score: selectedGame.score,
       description: selectedGame.description,
-      gameDetails: formData.get('gameDetails'),
+      gameDetails: formData.get('gameDetails')?.toString(),
       sourceUrl: selectedGame.sourceUrl,
       sourceName: selectedGame.sourceName,
       savedAt: new Date().toISOString()
     };
-    
-    savedGames.unshift(gameToSave);
-    localStorage.setItem('restub_games', JSON.stringify(savedGames));
-    
-    // Also save to the existing experience system
-    await addExperience(formData);
-    
-    // Trigger event for same-page updates
-    window.dispatchEvent(new Event('restub-game-added'));
-    
-    // Redirect to profile page to see the saved game
-    router.push('/profile');
+
+    try {
+      // Save to database
+      const response = await saveGame(gameToSave);
+
+      if (!response.success) {
+        setSaveError(response.error || 'Failed to save game. Please try again.');
+        setIsSaving(false);
+        return;
+      }
+
+      // Trigger event for same-page updates
+      window.dispatchEvent(new Event('restub-game-added'));
+
+      // Redirect to profile page to see the saved game
+      router.push('/profile');
+    } catch {
+      setSaveError('Failed to save game. Please try again.');
+      setIsSaving(false);
+    }
   };
 
   const resetForm = () => {
@@ -1107,20 +1124,36 @@ The more details you provide, the better we can find your game!"
                 })}
               </div>
 
+              {saveError && (
+                <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                  <p className="text-red-700 dark:text-red-300">{saveError}</p>
+                </div>
+              )}
+
               <div className="flex flex-col-reverse sm:flex-row justify-between gap-3">
                 <button
                   onClick={() => setCurrentStep('review')}
-                  className="w-full sm:w-auto px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all text-center shadow-sm hover:shadow-md"
+                  disabled={isSaving}
+                  className="w-full sm:w-auto px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all text-center shadow-sm hover:shadow-md disabled:opacity-50"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleAddToMyList}
-                  disabled={!selectedGameId}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!selectedGameId || isSaving}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  <Icon name="check" size="sm" />
-                  Add to My Games
+                  {isSaving ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="check" size="sm" />
+                      Add to My Games
+                    </>
+                  )}
                 </button>
               </div>
             </div>
